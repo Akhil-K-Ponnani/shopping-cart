@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
+/* GET admin home listing. */
 router.get('/', function(req, res, next) {
-
   let products=[
   {
     name:"Apple iPhone 12 Pro Max", 
@@ -29,7 +28,16 @@ router.get('/', function(req, res, next) {
   description:"Rear Quad Camera Co-Developed by Hasselblad, 48 MP Main camera, 50 MP Ultra Wide Angle Camera with Sensor size of 1/1.56'', 8 MP Telepoto Lens, 2 MP Monochorme Lens,16 MP Front Camera", 
   image:"https://images-na.ssl-images-amazon.com/images/I/41KqaHvwcpL._AC_SY580_FMwebp_.jpg"
   }]
-  res.render('index', { products, admin:false});
+  res.render('admin/products', {products, admin:true});
+});
+
+router.get('/add-product', function (req, res, next) {
+  res.render('admin/add-product');
+});
+
+router.post('/add-product', function(req, res, next) {
+  console.log(req.body);
+  console.log(req.files.image)
 });
 
 module.exports = router;

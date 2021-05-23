@@ -3,6 +3,17 @@ var router = express.Router();
 var productHelpers = require('../helpers/product-helpers');
 var userHelpers = require('../helpers/user-helpers');
 
+verifyLogin = function(req, res, next) {
+  if(req.session.loggedIn)
+  {
+    next();
+  }
+  else
+  {
+    res.redirect('/login');
+  }
+};
+
 /* GET user home page. */
 router.get('/', function(req, res, next) {
   productHelpers.viewProducts().then((products) => {
@@ -12,7 +23,15 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('user/login');
+  if(req.session.loggedIn)
+  {
+    res.redirect('/')
+  }
+  else
+    {
+      res.render('user/login',{loginErr:req.session.loginErr});
+      req.session.loginErr = false;
+    }
 });
 
 router.get('/signup', function(req, res, next) {
@@ -35,6 +54,7 @@ router.post('/login', function(req, res, next) {
      }
      else
      {
+       req.session.loginErr = "Invalid Email or Password";
        res.redirect('/login');
      }
    });
@@ -43,6 +63,10 @@ router.post('/login', function(req, res, next) {
 router.get('/logout', function(req, res, next) {
   req.session.destroy();
   res.redirect('/');
+});
+
+router.get('/cart', verifyLogin, function(req, res, next) {
+  res.render('user/cart');
 });
 
 module.exports = router;

@@ -13,11 +13,20 @@
                <label for="description">Description</label>
                <input type="text" name="description" value="{{product.description}}" class="form-control">
                <label for="image">Image</label>
-               <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:auto;">
-               <input type="file" name="image" class="form-control">
+               <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:auto;" id="imgView" class="pt-3">
+               <input type="file" name="image" class="form-control" onchange="viewImage(event)">
                <button type="submit" class="btn btn-success">Submit</button>
             </form>
          </div>
       </div>
    </div>
 </section>
+
+
+
+<script>
+   function viewImage(event)
+   {
+      document.getElementById('imgView').src = URL.createObjectURL(event.target.files[0])
+   }
+</script>

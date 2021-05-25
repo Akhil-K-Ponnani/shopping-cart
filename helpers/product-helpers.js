@@ -30,7 +30,9 @@ module.exports = {
   },
   updateProduct:function(productId, productDetails) {
     return new Promise((resolve, reject) => {
-      db.get().collection(collections.PRODUCT_COLLECTION).updateOne({_id:objectId(productId)}, {$set:{
+      db.get().collection(collections.PRODUCT_COLLECTION).updateOne({_id:objectId(productId)}, 
+      {$set:
+      {
         name:productDetails.name,
         category:productDetails.category, 
         description:productDetails.description,

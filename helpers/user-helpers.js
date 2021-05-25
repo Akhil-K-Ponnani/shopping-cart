@@ -1,4 +1,5 @@
 var bcrypt = require('bcryptjs');
+var objectId = require('mongodb').ObjectID;
 var db = require('../config/connection');
 var collections = require('../config/collections');
 
@@ -36,5 +37,59 @@ module.exports = {
           resolve({status:false})
         }
     }) 
+  },
+  addToCart:function(productId, userId) {
+     return new Promise(async(resolve, reject) => {
+        let userCart = await db.get().collection(collections.CART_COLLECTION).findOne({user:objectId(userId)});
+        if(userCart)
+        {
+           db.get().collection(collections.CART_COLLECTION).updateOne({user:objectId(userId)},
+              {
+                 $push:{products:objectId(productId)}
+              }).then((response) => {
+                 resolve(response)
+              })
+        }
+        else
+        {
+           cartObj = {
+             user:objectId(userId),
+             products:[objectId(productId)]
+           }
+           db.get().collection(collections.CART_COLLECTION).insertOne(cartObj).then((response) => {
+              resolve(response)
+           })
+        }
+     })
+  },
+  getCartProducts:function(userId) {
+     return new Promise(async(resolve, reject) => {
+        let cartItems = await db.get().collection(collections.CART_COLLECTION).aggregate([
+           {
+              $match:{user:objectId(userId)}
+           },
+           {
+              $lookup:
+              {
+                 from:collections.PRODUCT_COLLECTION, 
+                 let:{productList:'$products'},
+                 pipeline:
+                 [
+                    {
+                       $match:
+                       {
+                          $expr:
+                          {
+                             $in:['$_id', '$$productList']
+                          }
+                       }
+                    }
+                 ],
+                 as:'cartItems'
+              }
+           }
+        ]).toArray()
+        resolve(cartItems[0].cartItems)
+     })
   }
 }

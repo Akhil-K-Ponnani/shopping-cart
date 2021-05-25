@@ -39,8 +39,11 @@ router.get('/signup', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-   userHelpers.doSignup(req.body).then((userData) => {
-      console.log(userData)
+   userHelpers.doSignup(req.body).then((response) => {
+      console.log(response)
+      req.session.loggedIn = true;
+      req.session.user = response;
+      res.redirect('/')
    });
 });
 
@@ -61,12 +64,20 @@ router.post('/login', function(req, res, next) {
 });
 
 router.get('/logout', function(req, res, next) {
-  req.session.destroy();
-  res.redirect('/');
+   req.session.destroy();
+   res.redirect('/');
 });
 
-router.get('/cart', verifyLogin, function(req, res, next) {
-  res.render('user/cart');
+router.get('/cart', verifyLogin, async function(req, res, next) {
+   let products = await userHelpers.getCartProducts(req.session.user._id)
+   console.log(products)
+   res.render('user/cart');
 });
+
+router.get('/add-to-cart/:id', verifyLogin, function(req, res, next) {
+   userHelpers.addToCart(req.params.id,req.session.user._id).then(() => {
+      res.redirect('/')
+   })
+})
 
 module.exports = router;

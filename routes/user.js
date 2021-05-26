@@ -75,12 +75,10 @@ router.get('/logout', function(req, res, next) {
 
 router.get('/cart', verifyLogin, async function(req, res, next) {
    let products = await userHelpers.getCartProducts(req.session.user._id)
-   console.log(products)
    res.render('user/cart', {products, user:req.session.user});
 });
 
 router.get('/add-to-cart/:id', function(req, res, next) {
-   console.log("api call")
    userHelpers.addToCart(req.params.id,req.session.user._id).then(() => {
      res.json({status:true})
    })

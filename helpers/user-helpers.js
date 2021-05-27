@@ -47,8 +47,12 @@ module.exports = {
            let productExist = userCart.products.findIndex(product => product.item==productId)
            if(productExist!=-1)
            {
-              db.get().collection(collections.CART_COLLECTION).updateOne({'products.item':objectId(productId)}, 
-              {$inc:{'products.$.quantity':1}})
+              db.get().collection(collections.CART_COLLECTION).updateOne({user:objectId(userId), 'products.item':objectId(productId)}, 
+              {
+                 $inc:{'products.$.quantity':1}
+              }).then(() => {
+                 resolve()
+              })
               resolve()
            }
            else
@@ -97,27 +101,10 @@ module.exports = {
                  foreignField:'_id',
                  as:'product'
               }
+           },
+           {
+              $project:{item:1, quantity:1, product:{$arrayElemAt:['$product',0]}}
            }
-        /*   {
-              $lookup:
-              {
-                 from:collections.PRODUCT_COLLECTION, 
-                 let:{productList:'$products'},
-                 pipeline:
-                 [
-                    {
-                       $match:
-                       {
-                          $expr:
-                          {
-                             $in:['$_id', '$$productList']
-                          }
-                       }
-                    }
-                 ],
-                 as:'cartItems'
-              }
-           }*/
         ]).toArray()
         resolve(cartItems)
      })
@@ -131,6 +118,18 @@ module.exports = {
            count = cart.products.length
         }
         resolve(count)
+     })
+  },
+  changeProductQuantity:function(details)
+  {
+     details.count = parseInt(details.count)
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.CART_COLLECTION).updateOne({_id:objectId(details.cart), 'products.item':objectId(details.product)},
+        {
+           $inc:{'products.$.quantity':details.count}
+        }).then((response) => {
+           resolve(response)
+        })
      })
   }
 }

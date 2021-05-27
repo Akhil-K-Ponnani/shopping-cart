@@ -84,4 +84,10 @@ router.get('/add-to-cart/:id', function(req, res, next) {
    })
 })
 
+router.post('/change-product-quantity', function(req, res, next) {
+   userHelpers.changeProductQuantity(req.body).then(() => {
+   
+   })
+})
+
 module.exports = router;

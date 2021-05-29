@@ -124,12 +124,76 @@ module.exports = {
   {
      details.count = parseInt(details.count)
      return new Promise((resolve, reject) => {
-        db.get().collection(collections.CART_COLLECTION).updateOne({_id:objectId(details.cart), 'products.item':objectId(details.product)},
+        if(details.count==-1 && details.quantity==1)
         {
-           $inc:{'products.$.quantity':details.count}
+           db.get().collection(collections.CART_COLLECTION).updateOne({_id:objectId(details.cart)}, 
+           {
+              $pull:{products:{item:objectId(details.product)}}
+           }).then((response) => {
+              resolve({removeProduct:true})
+           })
+        }
+        else
+        {
+           db.get().collection(collections.CART_COLLECTION).updateOne({_id:objectId(details.cart), 'products.item':objectId(details.product)},
+           {
+              $inc:{'products.$.quantity':details.count}
+           }).then((response) => {
+              resolve(true)
+           })
+        }
+     })
+  },
+  removeCartProduct:function(details) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.CART_COLLECTION).updateOne({_id:objectId(details.cart)}, 
+        {
+           $pull:{products:{item:objectId(details.product)}}
         }).then((response) => {
            resolve(response)
         })
+     })
+  },
+  getTotalAmount:function(userId) {
+     return new Promise(async(resolve, reject) => {
+        let total = await db.get().collection(collections.CART_COLLECTION).aggregate([
+           {
+              $match:{user:objectId(userId)}
+           },
+           {
+              $unwind:'$products'
+           },
+           {
+              $project:
+              {
+                 item:'$products.item',
+                 quantity:'$products.quantity'
+              }
+           },
+           {
+              $lookup:
+              {
+                 from:collections.PRODUCT_COLLECTION,
+                 localField:'item',
+                 foreignField:'_id',
+                 as:'product'
+              }
+           },
+           {
+              $project:
+              {
+                 item:1, quantity:1, product:{$arrayElemAt:['$product', 0]}
+              }
+           },
+           {
+              $group:
+              {
+                 _id:null,
+                 total:{$sum:{$multiply:[{$toInt:'$quantity'}, {$toDecimal:'$product.price'}]}}
+              }
+           }
+        ]).toArray()
+        resolve(total[0].total)
      })
   }
 }

@@ -139,7 +139,7 @@ module.exports = {
            {
               $inc:{'products.$.quantity':details.count}
            }).then((response) => {
-              resolve(true)
+              resolve({status:true})
            })
         }
      })
@@ -189,11 +189,39 @@ module.exports = {
               $group:
               {
                  _id:null,
-                 total:{$sum:{$multiply:[{$toInt:'$quantity'}, {$toDecimal:'$product.price'}]}}
+                 total:{$sum:{$multiply:[{$toInt:'$quantity'}, {$toInt:'$product.price'}]}}
               }
            }
         ]).toArray()
         resolve(total[0].total)
+     })
+  },
+  getCartProductList:function(userId) {
+     return new Promise(async(resolve, reject) => {
+        let cart = await db.get().collection(collections.CART_COLLECTION).findOne({user:objectId(userId)})
+        resolve(cart.products)
+     })
+  },
+  placeOrder:function(order, products, totalPrice) {
+     return new Promise((resolve, reject) => {
+        let status = order['payment-method']==='COD'?'placed':'pending'
+        let orderObj = {
+           user:order.user, 
+           deliveryDetails:{
+              address:order.address, 
+              pincode:order.pincode, 
+              mobile:order.mobile 
+           }, 
+           products:products, 
+           totalAmount:totalPrice,
+           paymentMethod:order['payment-method'], 
+           date:new Date(), 
+           status:status
+        }
+        db.get().collection(collections.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
+           db.get().collection(collections.CART_COLLECTION).removeOne({user:objectId(order.user)})
+           resolve()
+        })
      })
   }
 }

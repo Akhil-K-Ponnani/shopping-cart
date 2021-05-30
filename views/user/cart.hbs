@@ -16,9 +16,9 @@
                <td>{{this.product.name}}</td>
                <td>Rs.{{this.product.price}}</td>
                <td>
-                  <button class="cart-item-count btn btn-secondary mr-3" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', -1)">-</button>
+                  <button class="cart-item-count btn btn-secondary mr-3" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', -1)">-</button>
                   <span id="{{this.product._id}}">{{this.quantity}}</span>
-                  <button class="cart-item-count btn btn-secondary ml-3" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', 1)">+</button>
+                  <button class="cart-item-count btn btn-secondary ml-3" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', 1)">+</button>
                </td>
                <td>
                   <button class="btn btn-danger" onclick="removeCartProduct('{{this._id}}', '{{this.product._id}}')">Remove</button>
@@ -29,7 +29,7 @@
       </table>
       <hr>
       <div class="float-right pr-5">
-         <h5 class="float-left mr-5">TOTAL: RS. 130000</h5><br>
+         <h5 class="float-left mr-5">TOTAL: RS.<span id="total">{{totalAmount}}</span></h5><br>
          <a href="/place-order" class="btn btn-success mt-3" style="width:100%;"><b>Place Order<b></a>
       </div>
    </div>
@@ -39,7 +39,7 @@
 
 
 <script>
-   function changeQuantity(cartId, productId, count)
+   function changeQuantity(cartId, productId, userId, count)
    {
       let quantity = parseInt(document.getElementById(productId).innerHTML)
       count = parseInt(count)
@@ -47,6 +47,7 @@
          url:'/change-product-quantity', 
          data:
          {
+            user:userId,
             cart:cartId,
             product:productId,
             count:count,
@@ -62,6 +63,7 @@
             else
             {
                document.getElementById(productId).innerHTML = quantity+count
+               document.getElementById('total').innerHTML = response.totalAmount
             }
          }
       })

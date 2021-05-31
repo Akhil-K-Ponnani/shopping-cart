@@ -106,9 +106,36 @@ router.get('/place-order', verifyLogin, async function(req, res, next) {
 router.post('/place-order', async function(req, res, next) {
    let products = await userHelpers.getCartProductList(req.body.user)
    let totalPrice = await userHelpers.getTotalAmount(req.body.user)
-   userHelpers.placeOrder(req.body, products, totalPrice).then((response) => {
-      res.json({status:true})
+   userHelpers.placeOrder(req.body, products, totalPrice).then((order) => {
+      if(req.body['payment-method']==='COD')
+      {
+         res.json({codSuccess:true})
+      }
+      else
+      {
+         userHelpers.generateRasorpay(order._id, order.totalAmount).then((response) => {
+            res.json(response)
+         })
+      }
    })
+})
+
+router.get('/order-success', function(req, res, next) {
+   res.render('user/order-success',{user:req.session.user})
+})
+
+router.get('/orders', async function(req, res, next) {
+   let orders = await userHelpers.getUserOrders(req.session.user._id)
+   res.render('user/orders', {user:req.session.user, orders})
+})
+
+router.get('/view-order-products/:id', async function(req, res, next) {
+   let products = await userHelpers.getOrderProducts(req.params.id)
+   res.render('user/view-order-products', {user:req.session.user, products})
+})
+
+router.post('/verify-payment', function(req, res, next) {
+   console.log(req.body)
 })
 
 module.exports = router;

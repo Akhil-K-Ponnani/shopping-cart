@@ -4,6 +4,7 @@ var collections = require('../config/collections');
 
 module.exports = {
   addProduct:function(product, callback) {
+    product.price = parseInt(product.price)
     db.get().collection(collections.PRODUCT_COLLECTION).insertOne(product).then(function(data) {
       callback(data.ops[0]._id);
     })
@@ -30,6 +31,7 @@ module.exports = {
   },
   updateProduct:function(productId, productDetails) {
     return new Promise((resolve, reject) => {
+      productDetails.price = parseInt(productDetails.price)
       db.get().collection(collections.PRODUCT_COLLECTION).updateOne({_id:objectId(productId)}, 
       {$set:
       {

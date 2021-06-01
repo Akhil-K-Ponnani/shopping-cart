@@ -210,7 +210,7 @@ module.exports = {
   },
   placeOrder:function(order, products, totalPrice) {
      return new Promise((resolve, reject) => {
-        let status = order['payment-method']==='COD'?'placed':'pending'
+        let status = order['payment-method']==='COD'?'Placed':'Pending'
         let orderObj = {
            user:objectId(order.user), 
            deliveryDetails:{
@@ -274,13 +274,42 @@ module.exports = {
   generateRasorpay:function(orderId, total) {
      return new Promise((resolve, reject) => {
         var options = {
-        amount: total,  // amount in the smallest currency unit
+        amount: total*100,  // amount in the smallest currency unit
         currency: "INR",
         receipt: orderId.toString()
         };
         instance.orders.create(options, function(err, order) {
         resolve(order)
         });
+     })
+  },
+  verifyPayment:function(details) {
+     return new Promise((resolve, reject) => {
+        const crypto = require('crypto');
+        let hmac = crypto.createHmac('sha256', 'uOzWvQVVODrUw6cBw5FnCVg6');
+        hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]']);
+        hmac = hmac.digest('hex')
+        if(hmac == details['payment[razorpay_signature]'])
+        {
+           resolve()
+        }
+        else
+        {
+           reject()
+        }
+     })
+  },
+  changePaymentStatus:function(orderId) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.ORDER_COLLECTION).updateOne({_id:objectId(orderId)}, 
+        {
+           $set:
+           {
+              status:'Placed'
+           }
+        }).then(() => {
+           resolve()
+        })
      })
   }
 }

@@ -50,7 +50,6 @@ $('#checkout-form').submit((e) => {
       method:'post',
       data:$('#checkout-form').serialize(),
       success:((response) => {
-         alert(response)
          if(response.codSuccess)
          {
             location.href = '/order-success'
@@ -71,11 +70,7 @@ $('#checkout-form').submit((e) => {
       "description": "Test Transaction",
       "image": "https://example.com/your_logo",
       "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-      "handler": function (response){
-      alert(response.razorpay_payment_id);
-      alert(response.razorpay_order_id);
-      alert(response.razorpay_signature)
-     
+      "handler": function (response){     
       verifyPayment(response, order)
       },
       "prefill": {
@@ -101,7 +96,17 @@ $('#checkout-form').submit((e) => {
          {
             payment, order
          },
-         method:'post'
+         method:'post',
+         success:((response) => {
+            if(response.status)
+            {
+               location.href='/order-success'
+            }
+            else
+            {
+               alert('Payment Failed')
+            }
+         })
       })
    }
 })

@@ -1,3 +1,4 @@
+var bcrypt = require('bcryptjs');
 var objectId = require('mongodb').ObjectID;
 var db = require('../config/connection');
 var collections = require('../config/collections');
@@ -9,6 +10,32 @@ module.exports = {
       callback(data.ops[0]._id);
     })
   },
+  doLogin:function(adminData) {
+    return new Promise(async(resolve, reject) => {
+      loginStatus = false;
+      response = {}
+      let admin = await db.get().collection(collections.ADMIN_COLLECTION).findOne({email:adminData.email})
+      if(admin)
+      {
+        bcrypt.compare(adminData.password, admin.password).then((status) => {
+          if(status)
+          {
+             response.admin = admin
+             response.status = true
+             resolve(response)
+          }
+          else
+          {
+             resolve({status:false})
+          }
+        })
+      }
+      else
+      {
+         resolve({status:false})
+      }
+    })
+  }, 
   viewProducts:function() {
     return new Promise(async(resolve, reject) => {
       let products = await db.get().collection(collections.PRODUCT_COLLECTION).find().toArray();

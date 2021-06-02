@@ -20,7 +20,7 @@ module.exports = {
    },
    doLogin:function(userData) {
       return new Promise(async(resolve, reject) => {
-        let loginSataus = false;
+        let loginStatus = false;
         response = {}
         let user = await db.get().collection(collections.USER_COLLECTION).findOne({email:userData.email});
         if(user)

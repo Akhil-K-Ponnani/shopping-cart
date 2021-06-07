@@ -1,0 +1,28 @@
+<section>
+   <div class="container">
+      <table class="table mt-5">
+      <thead>
+      <tr>
+      <th scope="col">No</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      {{#each users}}
+      <tr>
+      <th scope="row" id="slno">{{@index}}</th>
+      <td>{{this.name}}</td>
+      <td>{{this.email}}</td>
+      <td>{{this.status}}</td>
+      <td>
+         <a href="/admin/view-user/{{this._id}}" class="btn btn-primary">Edit</a>
+         <a href="/admin/view-order/{{this._id}}" class="btn btn-danger" onclick="return confirm('Are you want to delete {{this.name}} ?')">Delete</a>
+      </td>
+      </tr>
+      {{/each}}
+      </tbody>
+      </table>
+   </div>
+</section>

@@ -3,18 +3,28 @@
       <div class="row">
          <div class="col-md-6">
             <h2 class="text-center">Edit Product</h2>
-            <form action="/admin/edit-product/{{product._id}}" method="POST" enctype="multipart/form-data">
+            <form action="/admin/edit-product/{{product._id}}" method="POST" enctype="multipart/form-data" id="edit-product">
+              <div class="form-group">
                <label for="name">Name</label>
                <input type="text" name="name" value="{{product.name}}" class="form-control">
+              </div>
+              <div class="form-group">
                <label for="category">Category</label>
                <input type="text" name="category" value="{{product.category}}" class="form-control">
+              </div>
+              <div class="form-group">
                <label for="price">Price</label>
                <input type="number" name="price" value="{{product.price}}" class="form-control">
+              </div>
+              <div class="form-group">
                <label for="description">Description</label>
                <input type="text" name="description" value="{{product.description}}" class="form-control">
+              </div>
+              <div class="form-group">
                <label for="image">Image</label>
-               <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:auto;" id="imgView" class="pt-3">
+               <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:auto;" id="imgView" class="pb-1">
                <input type="file" name="image" class="form-control" onchange="viewImage(event)">
+              </div>
                <button type="submit" class="btn btn-success">Submit</button>
             </form>
          </div>

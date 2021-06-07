@@ -4,9 +4,10 @@
          <thead>
             <tr>
                <th scope="col">Date</th>
+               <th scope="col">Name</th>
+               <th scope="col">Mobile</th>
                <th scope="col">Address</th>
                <th scope="col">Pincode</th>
-               <th scope="col">Mobile</th>
                <th scope="col">Amount</th>
                <th scope="col">Payment</th>
                <th scope="col">Status</th>
@@ -16,9 +17,10 @@
             {{#each orders}}
             <tr>
                <td>{{this.date}}</td>
-               <td>{{this.deliveryDetails.address}}</td>
-               <td>{{this.deliveryDetails.address}}</td>
+               <td>{{this.deliveryDetails.name}}</td>
                <td>{{this.deliveryDetails.mobile}}</td>
+               <td>{{this.deliveryDetails.address}}</td>
+               <td>{{this.deliveryDetails.pincode}}</td>
                <td>{{this.totalAmount}}</td>
                <td>{{this.paymentMethod}}</td>
                <td>{{this.status}}</td>

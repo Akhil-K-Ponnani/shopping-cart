@@ -36,10 +36,25 @@ module.exports = {
       }
     })
   }, 
-  viewProducts:function() {
+/* viewAllProducts:function() {
     return new Promise(async(resolve, reject) => {
       let products = await db.get().collection(collections.PRODUCT_COLLECTION).find().toArray();
       resolve(products);
+    })*/
+    viewAllProducts:function() {
+    return new Promise(async(resolve, reject) => {
+       let categories = await db.get().collection(collections.CATEGORY_COLLECTION).aggregate([
+          {
+             $lookup:
+             {
+                from:collections.PRODUCT_COLLECTION,
+                localField:'name', 
+                foreignField:'category',
+                as:'products'
+             }
+          },
+       ]).toArray()
+    resolve(categories);
     })
   },
   deleteProduct:function(productId) {
@@ -63,12 +78,36 @@ module.exports = {
       {$set:
       {
         name:productDetails.name,
-        category:productDetails.category, 
+        category:productDetails.category,
         description:productDetails.description,
         price:productDetails.price
       }}).then((response) => {
         resolve(response)
       })
     })
+  },
+  viewOrders:function() {
+    return new Promise(async(resolve, reject) => {
+      let orders = await db.get().collection(collections.ORDER_COLLECTION).find().toArray();
+      resolve(orders);
+    })
+  },
+  viewUsers:function() {
+    return new Promise(async(resolve, reject) => {
+      let users = await db.get().collection(collections.USER_COLLECTION).find().toArray();
+      resolve(users);
+    })
+  },
+  addCategory:function(category) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.CATEGORY_COLLECTION).insertOne(category).then((data) => {
+           resolve(data.ops[0])
+        })
+     })
+  },
+  viewAllCategories:function() {
+     return new Promise((resolve, reject) => {
+        
+     })
   }
 };

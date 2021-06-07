@@ -15,8 +15,8 @@ verifyLogin = function(req, res, next) {
 
 /* GET admin home listing. */
 router.get('/',verifyLogin, function(req, res, next) {
-  productHelpers.viewProducts().then((products) => {
-    res.render('admin/products', {products, admin:true});
+  productHelpers.viewAllProducts().then((categories) => {
+    res.render('admin/products', {categories, admin:true});
   })
 });
 
@@ -92,6 +92,32 @@ router.post('/edit-product/:id', function(req, res, next) {
       image.mv('./public/product-images/'+id+'.jpg');
     }
   })
+})
+
+router.get('/orders',verifyLogin, function(req, res, next) {
+  productHelpers.viewOrders().then((orders) => {
+    res.render('admin/orders', {orders, admin:true});
+  })
+});
+
+router.get('/users',verifyLogin, function(req, res, next) {
+  productHelpers.viewUsers().then((users) => {
+    res.render('admin/users', {users, admin:true});
+  })
+});
+
+router.get('/categories', function(req, res, next) {
+   res.render('admin/categories')
+});
+
+router.get('/add-category', function(req, res, next) {
+   res.render('admin/add-category')
+});
+
+router.post('/add-category', function(req, res, next) {
+   productHelpers.addCategory(req.body).then((category) => {
+      res.redirect('/admin/add-category')
+   })
 })
 
 module.exports = router;

@@ -1,27 +1,29 @@
 <section>
-   <h2 class="ml-3 mt-5">Enter Delivery Details</h2>
-   <form action="" method="POST" id="checkout-form">
-      <div class="row mt-3">
-         <div class="col-md-8">
-            <div class="container">
-            <input type="text" name="user" value="{{user._id}}" hidden>
+   <div class="container">
+      <form action="" method="POST" id="checkout-form">
+         <div class="row mt-5">
+            <div class="col-md-7">
+               <h2 class="mb-2 text-center">Enter Delivery Details</h2>
+               <input type="text" name="user" value="{{user._id}}" hidden>
                <div class="form-group">
-                  <label for="address">Address</label>
-                  <input type="text" class="form-control" id="address" name="address">
-               </div>
-               <div class="form-group">
-                  <label for="pincode">Pincode</label>
-                  <input type="number" class="form-control" id="pincode" name="pincode">
+                  <label for="name">Name</label>
+                  <input type="text" class="form-control" id="name" name="name" required>
                </div>
                <div class="form-group">
                   <label for="mobile">Mobile</label>
-                  <input type="tel" class="form-control" id="mobile" name="mobile">
+                  <input type="tel" class="form-control" id="mobile" name="mobile" required>
+               </div>
+               <div class="form-group">
+                  <label for="address">Address</label>
+                  <input type="text" class="form-control" id="address" name="address" required>
+               </div>
+               <div class="form-group">
+                  <label for="pincode">Pincode</label>
+                  <input type="number" class="form-control" id="pincode" name="pincode" required>
                </div>
             </div>
-         </div>
-         <div class="col-md-4">
-            <div class="container">
-               <div class="mt-5 border border-secondary rounded p-3">
+            <div class="col-md-5 my-auto">
+               <div class="p-3 border border-secondary rounded" style="margin-top:4em;">
                   <h5>Total Amount : Rs.{{total}}</h5>
                   <hr>
                   <p>Payment Method</p>
@@ -35,9 +37,10 @@
                </div>
             </div>
          </div>
-      </div>
-   </form>
+      </form>
+   </div>
 </section>
+
 
 
 

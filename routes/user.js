@@ -22,15 +22,15 @@ router.get('/', async function(req, res, next) {
   {
     cartCount = await userHelpers.getCartCount(req.session.user._id)
   }
-  productHelpers.viewProducts().then((products) => {
-    res.render('user/products', {products, user, cartCount});
+  productHelpers.viewAllProducts().then((categories) => {
+    res.render('user/products', {categories, user, cartCount});
   })
 });
 
 router.get('/login', function(req, res, next) {
   if(req.session.user)
   {
-    res.redirect('/')
+    res.redirect('/');
   }
   else
     {
@@ -40,14 +40,30 @@ router.get('/login', function(req, res, next) {
 });
 
 router.get('/signup', function(req, res, next) {
-   res.render('user/signup');
+   if(req.session.user)
+   {
+     res.redirect('/');
+   }
+   else
+   {
+     res.render('user/signup',{loginErr:req.session.userLoginErr});
+     req.session.userLoginErr = false;
+   }
 });
 
 router.post('/signup', function(req, res, next) {
    userHelpers.doSignup(req.body).then((response) => {
-      req.session.user = response;
-      req.session.userLoggedIn = true;
-      res.redirect('/')
+      if(response.status)
+      {
+        req.session.user = response.user;
+        req.session.userLoggedIn = true;
+        res.redirect('/');
+      }
+      else
+      {
+        req.session.userLoginErr = "Email already exists. Please login";
+        res.redirect('/signup');
+      }
    });
 });
 
@@ -146,6 +162,14 @@ router.post('/verify-payment', function(req, res, next) {
    }).catch((err) => {
       res.json({status:false, errMsg:err})
    })
+})
+
+router.get('/view-product', function(req, res, next) {
+   res.render('user/view-product')
+})
+
+router.get('/account', function(req, res, next) {
+   res.render('user/account')
 })
 
 module.exports = router;

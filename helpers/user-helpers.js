@@ -12,10 +12,21 @@ var instance = new Razorpay({
 module.exports = {
    doSignup:function(userData) {
       return new Promise(async(resolve, reject) => {
-         userData.password = await bcrypt.hash(userData.password, 10);
-         db.get().collection(collections.USER_COLLECTION).insertOne(userData).then((data) => {
-         resolve(data.ops[0]);
-         });
+         response = {}
+         let user = await db.get().collection(collections.USER_COLLECTION).findOne({email:userData.email});
+         if(user)
+         {
+           resolve({status:false})
+         }
+         else
+         {
+           userData.password = await bcrypt.hash(userData.password, 10);
+           db.get().collection(collections.USER_COLLECTION).insertOne(userData).then((data) => {
+             response.user = data.ops[0]
+             response.status = true
+             resolve(response);
+           });
+         }
       });
    },
    doLogin:function(userData) {
@@ -117,11 +128,14 @@ module.exports = {
   },
   getCartCount:function(userId) {
      return new Promise(async(resolve, reject) => {
-        count = 0
+        let count = 0
         let cart = await db.get().collection(collections.CART_COLLECTION).findOne({user:objectId(userId)})
         if(cart)
         {
-           count = cart.products.length
+           for(i=0;i<cart.products.length;i++)
+           {
+              count = count + cart.products[i].quantity
+           }
         }
         resolve(count)
      })
@@ -214,9 +228,10 @@ module.exports = {
         let orderObj = {
            user:objectId(order.user), 
            deliveryDetails:{
+              name:order.name,
+              mobile:order.mobile, 
               address:order.address, 
-              pincode:order.pincode, 
-              mobile:order.mobile 
+              pincode:order.pincode,
            }, 
            products:products, 
            totalAmount:totalPrice,

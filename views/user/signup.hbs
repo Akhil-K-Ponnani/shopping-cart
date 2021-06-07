@@ -1,9 +1,10 @@
+<section>
+      <div class="container mt-3 p-3">
 <div class="row">
    <div class="col-md-6 m-auto">
-      <div class="container mt-5 pl-5">
          <h2 class="text-center">Create new account</h2>
-         <form action="/signup" method="POST">
-            <div class="form-group">
+         <form action="/signup" method="POST" id="signup" onchange="loginErr()">
+            <div class="form-group mt-2">
                <label>Name</label>
                <input type="text" class="form-control" name="name" placeholder="Enter Name">
             </div>
@@ -14,6 +15,9 @@
             <div class="form-group">
                <label>Password</label>
                <input type="password" class="form-control" name="password" placeholder="Enter Password">
+               {{#if loginErr}}
+               <small class="text-danger" id="loginErr">{{loginErr}}</small>
+               {{/if}}
             </div>
             <a href="/login">Already have account ?</a>
             <button type="submit" class="btn btn-primary float-right">SignUp</button>
@@ -21,3 +25,15 @@
       </div>
    </div>
 </div>
+</section>
+
+
+
+
+
+<script>
+function loginErr()
+{
+   document.getElementById('loginErr').style.visibility = 'hidden'
+}
+</script>

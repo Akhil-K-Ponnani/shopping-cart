@@ -164,8 +164,41 @@ router.post('/verify-payment', function(req, res, next) {
    })
 })
 
-router.get('/view-product', function(req, res, next) {
-   res.render('user/view-product')
+router.get('/view-product/:id', async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
+   productHelpers.getProductDetails(req.params.id).then((product) => {
+      res.render('user/view-product', {product, user:req.session.user, cartCount})
+   })
+})
+
+router.get('/view-category-products/:id', async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
+   productHelpers.viewCategoryProducts(req.params.id).then(async(products) => {
+      let category = await productHelpers.getCategoryDetails(req.params.id)
+      res.render('user/view-category-products', {products, category, user:req.session.user, cartCount})
+   })
+})
+
+router.get('/search-product', function(req, res, next) {
+   productHelpers.searchProduct(req.query.search).then(async(products) => {
+      let productCount = null
+      if(products.length > 0)
+         productCount = products.length
+      let cartCount = null
+      if(req.session.user)
+      {
+         cartCount = await userHelpers.getCartCount(req.session.user._id)
+      }
+      res.render('user/search-product', {products, user:req.session.user, productCount, cartCount})
+   })
 })
 
 router.get('/account', function(req, res, next) {

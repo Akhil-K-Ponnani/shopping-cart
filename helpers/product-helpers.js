@@ -6,6 +6,7 @@ var collections = require('../config/collections');
 module.exports = {
   addProduct:function(product, callback) {
     product.price = parseInt(product.price)
+    product.category = objectId(product.category)
     db.get().collection(collections.PRODUCT_COLLECTION).insertOne(product).then(function(data) {
       callback(data.ops[0]._id);
     })
@@ -48,7 +49,7 @@ module.exports = {
              $lookup:
              {
                 from:collections.PRODUCT_COLLECTION,
-                localField:'name', 
+                localField:'_id', 
                 foreignField:'category',
                 as:'products'
              }
@@ -65,22 +66,24 @@ module.exports = {
     })
   },
   getProductDetails:function(productId) {
-    return new Promise((resolve, reject) => {
-      db.get().collection(collections.PRODUCT_COLLECTION).findOne({_id:objectId(productId)}).then((product) => {
-        resolve(product)
+     return new Promise((resolve, reject) => {
+       db.get().collection(collections.PRODUCT_COLLECTION).findOne({_id:objectId(productId)}).then((product) => {
+         resolve(product)
       })
     })
   },
   updateProduct:function(productId, productDetails) {
     return new Promise((resolve, reject) => {
       productDetails.price = parseInt(productDetails.price)
+      productDetails.category = objectId(productDetails.category)
       db.get().collection(collections.PRODUCT_COLLECTION).updateOne({_id:objectId(productId)}, 
       {$set:
       {
         name:productDetails.name,
         category:productDetails.category,
-        description:productDetails.description,
-        price:productDetails.price
+        variant:productDetails.variant,
+        price:productDetails.price,
+        description:productDetails.description
       }}).then((response) => {
         resolve(response)
       })
@@ -101,13 +104,84 @@ module.exports = {
   addCategory:function(category) {
      return new Promise((resolve, reject) => {
         db.get().collection(collections.CATEGORY_COLLECTION).insertOne(category).then((data) => {
-           resolve(data.ops[0])
+           resolve(data.ops[0]._id)
         })
      })
   },
   viewAllCategories:function() {
+     return new Promise(async(resolve, reject) => {
+        let categories = await db.get().collection(collections.CATEGORY_COLLECTION).find().toArray()
+        resolve(categories)
+     })
+  },
+  getCategoryDetails:function(categoryId) {
      return new Promise((resolve, reject) => {
-        
+        db.get().collection(collections.CATEGORY_COLLECTION).findOne({_id:objectId(categoryId)}).then((category) => {
+           resolve(category)
+        })
+     })
+  },
+  updateCategory:function(categoryId, categoryDetails) {
+    return new Promise((resolve, reject) => {
+      db.get().collection(collections.CATEGORY_COLLECTION).updateOne({_id:objectId(categoryId)}, 
+      {$set:
+      {
+        name:categoryDetails.name,
+        displayName:categoryDetails.displayName
+      }}).then((response) => {
+        resolve(response)
+      })
+    })
+  },
+  deleteCategory:function(categoryId) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.CATEGORY_COLLECTION).removeOne({_id:objectId(categoryId)}).then((response) => {
+           resolve(response)
+        })
+     })
+  },
+  viewCategoryProducts:function(categoryId) {
+     return new Promise(async(resolve, reject) => {
+        let products = await db.get().collection(collections.PRODUCT_COLLECTION).find({category:objectId(categoryId)}).toArray()
+        resolve(products)
+     })
+  },
+  searchProduct:function(search) {
+     return new Promise(async(resolve, reject) => {
+        let searchResult = await db.get().collection(collections.PRODUCT_COLLECTION).aggregate([
+           {
+              $lookup:
+              {
+                 from:collections.CATEGORY_COLLECTION,
+                 localField:'category', 
+                 foreignField:'_id',
+                 as:'category'
+              }
+           },
+           {
+              $project:
+              {
+                 name:1, category:{$arrayElemAt:['$category',0]}, variant:1, price:1
+              }
+           },
+           {
+              $project:
+              {
+                 name:1, category:'$category.name', variant:1, price:1
+              }
+           },
+           {
+              $match:
+              {
+                 $or:[
+                    {name:{'$regex' : search, '$options' : 'i'}},
+                    {category:{'$regex' : search, '$options' : 'i'}},
+                    {variant:{'$regex' : search, '$options' : 'i'}}
+                 ]
+              }
+           }
+        ]).toArray()
+        resolve(searchResult)
      })
   }
 };

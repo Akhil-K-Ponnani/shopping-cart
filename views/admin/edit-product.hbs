@@ -10,7 +10,20 @@
               </div>
               <div class="form-group">
                <label for="category">Category</label>
-               <input type="text" name="category" value="{{product.category}}" class="form-control">
+               <select class="custom-select mr-sm-2" name="category" id="inlineFormCustomSelect">
+                  <option value="">Choose...</option>
+                  {{#each categories}}
+                  {{#if this.selected}}
+                  <option selected value="{{this._id}}">{{this.name}}</option>
+                  {{else}}
+                  <option value="{{this._id}}">{{this.name}}</option>
+                  {{/if}}
+                  {{/each}}
+               </select>
+              </div>
+              <div class="form-group">
+               <label for="variant">Variant</label>
+               <input type="text" name="variant" value="{{product.variant}}" class="form-control">
               </div>
               <div class="form-group">
                <label for="price">Price</label>
@@ -22,7 +35,7 @@
               </div>
               <div class="form-group">
                <label for="image">Image</label>
-               <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:auto;" id="imgView" class="pb-1">
+               <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:100px;" id="imgView" class="pb-1">
                <input type="file" name="image" class="form-control" onchange="viewImage(event)">
               </div>
                <button type="submit" class="btn btn-success">Submit</button>

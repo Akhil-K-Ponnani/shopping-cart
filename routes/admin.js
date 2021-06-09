@@ -1,4 +1,5 @@
 var express = require('express');
+var fs = require('fs');
 var router = express.Router();
 var productHelpers = require('../helpers/product-helpers')
 
@@ -55,7 +56,9 @@ router.get('/logout', function(req, res, next) {
 })
 
 router.get('/add-product', function (req, res, next) {
-  res.render('admin/add-product', {admin:true});
+  productHelpers.viewAllCategories().then((categories) => {
+    res.render('admin/add-product', {categories, admin:true});
+  })
 });
 
 router.post('/add-product', function(req, res, next) {
@@ -63,7 +66,7 @@ router.post('/add-product', function(req, res, next) {
     let image = req.files.image;
     image.mv('./public/product-images/'+id+'.jpg', function(err, done) {
       if(!err)
-        res.render('admin/add-product');
+        res.redirect('/admin');
       else
         console.log(err);
     });
@@ -73,13 +76,24 @@ router.post('/add-product', function(req, res, next) {
 router.get('/delete-product/:id', function(req, res, next) {
   productId = req.params.id
   productHelpers.deleteProduct(productId).then((response) => {
-    res.redirect('/admin');
+    fs.unlink('./public/product-images/'+productId+'.jpg', function(err) {
+       if(err)
+         console.log(err)
+       res.redirect('/admin');
+    })
   })
 });
 
 router.get('/edit-product/:id', async function(req, res, next) {
   let product = await productHelpers.getProductDetails(req.params.id)
-  res.render('admin/edit-product', {product, admin:true});
+  let categories = await productHelpers.viewAllCategories()
+  categories.forEach(category => {
+     if(category._id.toString() === product.category.toString())
+     {
+        category['selected'] = true
+     }
+  })
+  res.render('admin/edit-product', {product, categories, admin:true});
 });
 
 router.post('/edit-product/:id', function(req, res, next) {
@@ -107,17 +121,53 @@ router.get('/users',verifyLogin, function(req, res, next) {
 });
 
 router.get('/categories', function(req, res, next) {
-   res.render('admin/categories')
+   productHelpers.viewAllCategories().then((categories) => {
+      res.render('admin/categories', {categories, admin:true})
+   })
 });
 
 router.get('/add-category', function(req, res, next) {
-   res.render('admin/add-category')
+   res.render('admin/add-category', {admin:true})
 });
 
 router.post('/add-category', function(req, res, next) {
-   productHelpers.addCategory(req.body).then((category) => {
-      res.redirect('/admin/add-category')
+   productHelpers.addCategory(req.body).then((id) => {
+      let image = req.files.image
+      image.mv('./public/category-images/'+id+'.jpg', function(err, done) {
+      if(!err)
+        res.redirect('/admin/categories');
+      else
+        console.log(err);
+     })
    })
-})
+});
+
+router.get('/edit-category/:id', async function(req, res, next) {
+   let category = await productHelpers.getCategoryDetails(req.params.id)
+   res.render('admin/edit-category', {category, admin:true})
+});
+
+router.post('/edit-category/:id', function(req, res, next) {
+  let id = req.params.id;
+  productHelpers.updateCategory(req.params.id, req.body).then(() =>{
+    res.redirect('/admin/categories')
+    if(req.files.image)
+    {
+      let image = req.files.image;
+      image.mv('./public/category-images/'+id+'.jpg');
+    }
+  })
+});
+
+router.get('/delete-category/:id', function(req, res, next) {
+   categoryId = req.params.id
+   productHelpers.deleteCategory(categoryId).then((response) => {
+      fs.unlink('./public/category-images/'+categoryId+'.jpg', function(err) {
+         if(err)
+           console.log(err)
+      res.redirect('/admin/categories')
+      })
+   })
+});
 
 module.exports = router;

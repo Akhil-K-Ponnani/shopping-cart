@@ -35,12 +35,31 @@
 
 
 <section>
-   <div class="container-fluid mt-5">
+   <div class="container-fluid mt-3">
+      <div class="row category-scrollmenu">
+         <div class="col-md-12">
+            {{#each categories}}
+            <a href="/view-category-products/{{this._id}}" style="text-decoration:none; color:black;">
+               <div class="card align-items-center text-center mr-3" style="width:6rem; height:5rem; display:inline-block;">
+                  <img class="mt-1" src="/category-images/{{this._id}}.jpg" alt="{{this.name}}" style="height:3rem; width:3rem;"><br>
+                  <small class="card-title font-weight-bold mt-1">{{this.name}}</small>
+               </div>
+            </a>
+            {{/each}}
+         </div>
+      </div>
+   </div>
+</section>
+
+
+<section>
+   <div class="container-fluid mt-3">
       {{#each categories}}
       <h5>{{this.displayName}}</h5>
       <div class="row">
          {{#each products}}
          <div class="col-6 col-md-2 pb-4">
+            <a href="/view-product/{{this._id}}" style="text-decoration:none; color:black;">
             <div class="card align-items-center text-center">
                <img class="mt-3" src="/product-images/{{this._id}}.jpg" alt="{{this.name}}" style="height:6rem; width:6rem;">
                <div class="card-body">
@@ -50,6 +69,7 @@
                   <button class="btn btn-primary" onclick="addToCart('{{this._id}}')" style="width:7em;height:auto">Add to Cart</button>
                </div>
             </div>
+            </a>
          </div>
          {{/each}}
       </div>

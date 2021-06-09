@@ -1,0 +1,25 @@
+<section>
+   <div class="container-fluid mt-3">
+      {{#if productCount}}
+      <h5>Showing {{productCount}} Products</h5>
+      {{else}}
+      <h5 class="text-center">No Products Found</h5>
+      {{/if}}
+      <div class="row mt-3">
+         {{#each products}}
+         <div class="col-6 col-md-2 pb-4">
+            <a href="/view-product/{{this._id}}" style="text-decoration:none; color:black;">
+            <div class="card align-items-center text-center">
+               <img class="mt-3" src="/product-images/{{this._id}}.jpg" alt="{{this.name}}" style="height:6rem; width:6rem;">
+               <div class="card-body">
+                  <h6 class="card-title" style="height:2em;">{{this.name}}</h6>
+                  <h6 class="card-text text-success">₹{{this.price}}</h6>
+                  <button class="btn btn-primary" onclick="addToCart('{{this._id}}')" style="width:7em;height:auto">Add to Cart</button>
+               </div>
+            </div>
+            </a>
+         </div>
+         {{/each}}
+      </div>
+   </div>
+</section>

@@ -1,12 +1,16 @@
 <section>
    <div class="container mt-4">
       <div class="row">
-         <div class="col-md-6">
+         <div class="col-md-12">
             <h2 class="text-center">Edit Product</h2>
             <form action="/admin/edit-product/{{product._id}}" method="POST" enctype="multipart/form-data" id="edit-product">
               <div class="form-group">
                <label for="name">Name</label>
                <input type="text" name="name" value="{{product.name}}" class="form-control">
+              </div>
+              <div class="form-group">
+               <label for="variant">Variant</label>
+               <input type="text" name="variant" value="{{product.variant}}" class="form-control">
               </div>
               <div class="form-group">
                <label for="category">Category</label>
@@ -22,21 +26,28 @@
                </select>
               </div>
               <div class="form-group">
-               <label for="variant">Variant</label>
-               <input type="text" name="variant" value="{{product.variant}}" class="form-control">
-              </div>
-              <div class="form-group">
                <label for="price">Price</label>
                <input type="number" name="price" value="{{product.price}}" class="form-control">
               </div>
               <div class="form-group">
                <label for="description">Description</label>
-               <input type="text" name="description" value="{{product.description}}" class="form-control">
-              </div>
+               <textarea rows="5" type="text" name="description" class="form-control">{{product.description}}</textarea>
+              </div>  
               <div class="form-group">
-               <label for="image">Image</label>
-               <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:100px;" id="imgView" class="pb-1">
-               <input type="file" name="image" class="form-control" onchange="viewImage(event)">
+                <label for="image">Image</label>
+                <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:100px;height:100px;" id="imgView" class="pb-1">
+                <div class="custom-file">
+                <input type="file" name="image" class="custom-file-input" id="customFile" onchange="viewImage(event)">
+                <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+              </div>
+              <div class="custom-control custom-checkbox pb-3">
+              {{#if product.stock}}
+              <input type="checkbox" name="stock" value="true" class="custom-control-input" id="customCheck1" checked>
+              {{else}}
+              <input type="checkbox" name="stock" value="true" class="custom-control-input" id="customCheck1">
+              {{/if}}
+              <label class="custom-control-label" for="customCheck1">In Stock</label>
               </div>
                <button type="submit" class="btn btn-success">Submit</button>
             </form>

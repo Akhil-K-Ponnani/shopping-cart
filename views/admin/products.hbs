@@ -1,46 +1,64 @@
 <section>
-   <div class="container">
-      <div class="row mt-4">
-         <a href="/admin/add-product" class="btn btn-success ml-auto">Add Product</a>
+   <div class="container-fluid mt-3">
+      <div class="row">
+         <div class="col-md-12">
+            <a href="/admin/add-product" class="btn btn-success float-right mb-3">Add Product</a>
+            <div class="table-responsive">
+               <table class="table text-center">
+                  <thead>
+                     <tr>
+                        <th scope="col" class="align-middle">No</th>
+                        <th scope="col" class="align-middle">Name</th>
+                        <th scope="col" class="align-middle">Variant</th>
+                        <th scope="col" class="align-middle">Category</th>
+                        <th scope="col" class="align-middle">Price</th>
+                        <th scope="col" class="align-middle">Stock</th>
+                        <th scope="col" class="align-middle">Image</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {{#each categories}}
+                     {{#each products}}
+                     <tr>
+                        <th scope="row" class="align-middle">{{this.slno}}</th>
+                        <td class="align-middle">{{this.name}}</td>
+                        <td class="align-middle">{{this.variant}}</td>
+                        <td class="align-middle">{{../this.name}}</td>
+                        <td class="align-middle">{{this.price}}</td>
+                        {{#if this.stock}}
+                        <td class="align-middle"><span class="text-success">Available</span></td>
+                        {{else}}
+                        <td class="align-middle"><span class="text-danger">Out of Stock</span></td>
+                        {{/if}}
+                        <td class="align-middle"><img style="width:70px; height:70px;" src="/product-images/{{this._id}}.jpg" alt="{{this.name}}"></td>
+                        <td class="align-middle"><a href="/admin/edit-product/{{this._id}}" class="btn btn-primary"><i class="fas fa-pen"></i></a></td>
+                        <td class="align-middle"><a href="" class="btn btn-danger" data-toggle="modal" data-target="#delete{{this._id}}"><i class="fas fa-trash-alt"></i></a></td>
+                        <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                           <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                 <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Delete?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                 </div>
+                                 <div class="modal-body">
+                                    Do you want to delete {{this.name}} ?
+                                 </div>
+                                 <div class="modal-footer">
+                                    <a href="" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                                    <a href="/admin/delete-product/{{this._id}}" class="btn btn-danger">Delete</a>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </tr>
+                     {{/each}}
+                     {{/each}}
+                  </tbody>
+               </table>
+            </div>
+         </div>
       </div>
-      <table class="table mt-5" id="productTable">
-      <thead>
-      <tr>
-      <th scope="col">No</th>
-      <th scope="col">Name</th>
-      <th scope="col">Category</th>
-      <th scope="col">Price</th>
-      <th scope="col">Description</th>
-      <th scope="col">Image</th>
-      <th scope="col">Options</th>
-      </tr>
-      </thead>
-      <tbody>
-      {{#each categories}}
-      {{#each products}}
-      <tr>
-      <th scope="row">1</th>
-      <td>{{this.name}}</td>
-      <td>{{../this.name}}</td>
-      <td>{{this.price}}</td>
-      <td>{{this.description}}</td>
-      <td><img style="width:50px; height:50px;" src="/product-images/{{this._id}}.jpg" alt="{{this.name}}"></td>
-      <td>
-         <a href="/admin/edit-product/{{this._id}}" class="btn btn-primary">Edit</a>
-         <a href="/admin/delete-product/{{this._id}}" class="btn btn-danger" onclick="return confirm('Are you want to delete {{this.name}} ?')">Delete</a>
-      </td>
-      </tr>
-      {{/each}}
-      {{/each}}
-      </tbody>
-      </table>
    </div>
 </section>
-
-
-
-<script>
-   $(document).ready( function () {
-   $('#productTable').DataTable();
-   } );
-</script

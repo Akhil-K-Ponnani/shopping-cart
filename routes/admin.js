@@ -17,7 +17,15 @@ verifyLogin = function(req, res, next) {
 /* GET admin home listing. */
 router.get('/',verifyLogin, function(req, res, next) {
   productHelpers.viewAllProducts().then((categories) => {
-    res.render('admin/products', {categories, admin:true});
+    let slno = 1
+    categories.forEach(category => {
+       category.products.forEach(product => {
+          product.slno = slno
+          slno++
+       })
+    })
+    slno = null
+    res.render('admin/products', {categories, productSearch:true, admin:true});
   })
 });
 
@@ -57,7 +65,7 @@ router.get('/logout', function(req, res, next) {
 
 router.get('/add-product', function (req, res, next) {
   productHelpers.viewAllCategories().then((categories) => {
-    res.render('admin/add-product', {categories, admin:true});
+    res.render('admin/add-product', {categories, productSearch:true, admin:true});
   })
 });
 
@@ -93,10 +101,11 @@ router.get('/edit-product/:id', async function(req, res, next) {
         category['selected'] = true
      }
   })
-  res.render('admin/edit-product', {product, categories, admin:true});
+  res.render('admin/edit-product', {product, categories, productSearch:true, admin:true});
 });
 
 router.post('/edit-product/:id', function(req, res, next) {
+ console.log(req.body)
   let id = req.params.id;
   productHelpers.updateProduct(req.params.id, req.body).then(() =>{
     res.redirect('/admin')
@@ -110,24 +119,42 @@ router.post('/edit-product/:id', function(req, res, next) {
 
 router.get('/orders',verifyLogin, function(req, res, next) {
   productHelpers.viewOrders().then((orders) => {
-    res.render('admin/orders', {orders, admin:true});
+    let slno = 1
+    orders.forEach(order => {
+       order.slno = slno
+       slno++
+    })
+    slno = null
+    res.render('admin/orders', {orders, orderSearch:true, admin:true});
   })
 });
 
 router.get('/users',verifyLogin, function(req, res, next) {
   productHelpers.viewUsers().then((users) => {
-    res.render('admin/users', {users, admin:true});
+    let slno = 1
+    users.forEach(user => {
+       user.slno = slno
+       slno++
+    })
+    slno = null
+    res.render('admin/users', {users, userSearch:true, admin:true});
   })
 });
 
 router.get('/categories', function(req, res, next) {
    productHelpers.viewAllCategories().then((categories) => {
-      res.render('admin/categories', {categories, admin:true})
+      let slno = 1
+      categories.forEach(category => {
+         category.slno = slno
+         slno++
+      })
+      slno = null
+      res.render('admin/categories', {categories, categorySearch:true, admin:true})
    })
 });
 
 router.get('/add-category', function(req, res, next) {
-   res.render('admin/add-category', {admin:true})
+   res.render('admin/add-category', {categorySearch:true, admin:true})
 });
 
 router.post('/add-category', function(req, res, next) {
@@ -144,7 +171,7 @@ router.post('/add-category', function(req, res, next) {
 
 router.get('/edit-category/:id', async function(req, res, next) {
    let category = await productHelpers.getCategoryDetails(req.params.id)
-   res.render('admin/edit-category', {category, admin:true})
+   res.render('admin/edit-category', {category, categorySearch:true, admin:true})
 });
 
 router.post('/edit-category/:id', function(req, res, next) {
@@ -169,5 +196,65 @@ router.get('/delete-category/:id', function(req, res, next) {
       })
    })
 });
+
+router.get('/search-product', function(req, res, next) {
+   productHelpers.searchProduct(req.query.search).then((products) => {
+      let productCount = null
+      if(products.length > 0)
+         productCount = products.length
+      let slno = 1
+      products.forEach(product => {
+         product.slno = slno
+         slno++
+      })
+      slno = null
+      res.render('admin/search-product', {products, productSearch:true, productCount, admin:true})
+   })
+})
+
+router.get('/search-category', function(req, res, next) {
+   productHelpers.searchCategory(req.query.search).then((categories) => {
+      let categoryCount = null
+      if(categories.length > 0)
+         categoryCount = categories.length
+      let slno = 1
+      categories.forEach(category => {
+         category.slno = slno
+         slno++
+      })
+      slno = null
+      res.render('admin/search-category', {categories, categorySearch:true, categoryCount, admin:true})
+   })
+})
+
+router.get('/search-order', function(req, res, next) {
+   productHelpers.searchOrder(req.query.search).then((orders) => {
+      let orderCount = null
+      if(orders.length > 0)
+         orderCount = orders.length
+      let slno = 1
+      orders.forEach(order => {
+         order.slno = slno
+         slno++
+      })
+      slno = null
+      res.render('admin/search-order', {orders, orderSearch:true, orderCount, admin:true})
+   })
+})
+
+router.get('/search-user', function(req, res, next) {
+   productHelpers.searchUser(req.query.search).then((users) => {
+      let userCount = null
+      if(users.length > 0)
+         userCount = users.length
+      let slno = 1
+      users.forEach(user => {
+         user.slno = slno
+         slno++
+      })
+      slno = null
+      res.render('admin/search-user', {users, userSearch:true, userCount, admin:true})
+   })
+})
 
 module.exports = router;

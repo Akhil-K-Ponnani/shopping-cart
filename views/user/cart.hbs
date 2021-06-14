@@ -1,39 +1,57 @@
 <section>
-   <div class="container">
-      <table class="table mt-5">
-         <thead>
-            <tr>
-               <th scope="col">Item</th>
-               <th scope="col">Title</th>
-               <th scope="col">Price</th>
-               <th scope="col">Quantity</th>
-            </tr>
-         </thead>
-         <tbody>
-            {{#each products}}
-            <tr>
-               <td><img src="/product-images/{{this.product._id}}.jpg" alt="{{this.name}}" style="width:70px;height:70px"></td>
-               <td>{{this.product.name}}</td>
-               <td>Rs.{{this.product.price}}</td>
-               <td>
-                  <button class="cart-item-count btn btn-secondary mr-3" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', -1)">-</button>
-                  <span id="{{this.product._id}}">{{this.quantity}}</span>
-                  <button class="cart-item-count btn btn-secondary ml-3" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', 1)">+</button>
-               </td>
-               <td>
-                  <button class="btn btn-danger" onclick="removeCartProduct('{{this._id}}', '{{this.product._id}}')">Remove</button>
-               </td>
-            </tr>
-            {{/each}}
-         </tbody>
-      </table>
-      <hr>
-      <div class="float-right pr-5">
-         <h5 class="float-left mr-5">TOTAL: RS.<span id="total">{{totalAmount}}</span></h5><br>
-         <a href="/place-order" class="btn btn-success mt-3" style="width:100%;"><b>Place Order<b></a>
+   <div class="container-fluid mt-3">
+      {{#each products}}
+      <div class="row border rounded m-0 mb-3 pt-1 pb-1">
+         <div class="col-4 text-center my-auto">
+            <a href="/view-product/{{this.product._id}}" style="text-decoration:none;"><img src="/product-images/{{this.product._id}}.jpg" class="mb-2 mt-1" alt="{{this.product.name}}" style="width:70px;height:70px;"></a><br>
+            <i class="fas fa-minus-square mr-1" style="font-size:20px;" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', -1)"></i>
+            <span id="{{this.product._id}}">{{this.quantity}}</span>
+            <i class="fas fa-plus-square ml-1" style="font-size:20px;" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', 1)"></i>
+         </div>
+         <div class="col-8 text-center my-auto">
+            <div class="row">
+               <div class="col-md-6 my-auto">
+                  <h6>{{this.product.name}}</h6>
+                  <h6 class="text-success">₹{{this.product.price}}</h6>
+               </div>
+               <div class="col-md-6 my-auto">
+                  <button class="btn btn-danger btn-sm" onclick="removeCartProduct('{{this._id}}', '{{this.product._id}}')">Remove</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      {{/each}}
+   </div>
+</section>
+
+{{#if totalAmount}}
+<section>
+   <div class="container-fluid mt-5">
+      <div class="row">
+         <div class="col-6 col-md-9">
+            <h5>Total Amount:</h5>
+         </div>
+         <div class="col-6 col-md-3 text-center align-items-center">
+            <h5>
+            ₹<span id="total">{{totalAmount}}</span>
+            <h5>
+            <a href="/place-order" class="btn btn-success font-weight-bold" style="width:100%;">Place Order</a>
+         </div>
       </div>
    </div>
 </section>
+{{else}}
+<section>
+   <div class="container mt-3">
+      <div class="row">
+         <div class="col-md-12 text-center">
+            <h5>Cart is Empty</h5>
+            <a href="/" class="btn btn-primary btn-sm">Go Shopping</a>
+         </div>
+      </div>
+   </div>
+</section>
+{{/if}}
 
 
 
@@ -64,6 +82,7 @@
             {
                document.getElementById(productId).innerHTML = quantity+count
                document.getElementById('total').innerHTML = response.totalAmount
+               document.getElementById('cart-count').innerHTML = response.cartCount
             }
          }
       })

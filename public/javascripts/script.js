@@ -12,30 +12,19 @@ function addToCart(productId)
          }
       }
    })
-};
-
-
-
+}
 
 
 
 
 function buyNow(productId)
 {
-   $.ajax({
-      url:'/add-to-cart/'+productId,
-      method:'get',
-      success:(response) => {
-         if(response.status)
-         {
-            let count = $('#cart-count').html()
-            count = parseInt(count)+1
-            $('#cart-count').html(count)
-            location.href="/place-order?search="+productId
-         }
-      }
-   })
-};
+  location.href="/place-order?product="+productId
+}
+
+
+
+
 
 
 
@@ -101,13 +90,13 @@ $(document).ready(function()
       {
         required:true
       },
-      category:
-      {
-        required:true
-      },
       variant:
       {
          required:true
+      },
+      category:
+      {
+        required:true
       },
       price:
       {
@@ -126,8 +115,8 @@ $(document).ready(function()
     messages:
     {
       name:"<small class='text-danger'>Please enter a product Name.</small>",
-      category:"<small class='text-danger'>Please choose a product Category.</small>",
       variant:"<small class='text-danger'>Please enter a product Variant.</small>",
+      category:"<small class='text-danger'>Please choose a product Category.</small>",
       price:"<small class='text-danger'>Please enter a valid product Price.</small>",
       description:"<small class='text-danger'>Please enter a product Description.</small>",
       image:"<small class='text-danger'>Please choose a product Image.</small>"
@@ -142,13 +131,13 @@ $(document).ready(function()
       {
         required:true
       },
-      category:
-      {
-        required:true
-      },
       variant:
       {
          required:true
+      },
+      category:
+      {
+        required:true
       },
       price:
       {
@@ -163,8 +152,8 @@ $(document).ready(function()
     messages:
     {
       name:"<small class='text-danger'>Please enter a product Name.</small>",
-      category:"<small class='text-danger'>Please choose a product Category.</small>",
       variant:"<small class='text-danger'>Please enter a product Variant.</small>",
+      category:"<small class='text-danger'>Please choose a product Category.</small>",
       price:"<small class='text-danger'>Please enter a valid product Price.</small>",
       description:"<small class='text-danger'>Please enter a product Description.</small>"
     }

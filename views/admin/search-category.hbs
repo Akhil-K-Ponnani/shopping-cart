@@ -2,7 +2,8 @@
    <div class="container-fluid mt-3">
       <div class="row">
          <div class="col-md-12">
-            <a href="/admin/add-category" class="btn btn-success float-right mb-3">Add Category</a>
+            {{#if categoryCount}}
+            <h5 class="mb-3">Showing {{categoryCount}} Categories</h5>
             <div class="table-responsive">
                <table class="table text-center">
                   <thead>
@@ -47,6 +48,9 @@
                   </tbody>
                </table>
             </div>
+            {{else}}
+            <h5 class="text-center">No Categories Found</h5>
+            {{/if}}
          </div>
       </div>
    </div>

@@ -1,3 +1,4 @@
+<!--
 <section>
    <div class="container">
       <table class="table mt-5">
@@ -31,5 +32,44 @@
             {{/each}}
          </tbody>
       </table>
+   </div>
+</section>
+-->
+
+
+
+
+
+
+
+
+
+
+
+<section>
+   <div class="container-fluid mt-3">
+      {{#each orders}}
+      <div class="row border rounded m-0 mb-3 pt-1 pb-1">
+         <div class="col-4 text-center my-auto">
+            <a href="/view-product/{{this.product}}" style="text-decoration:none;"><img src="/product-images/{{this.product}}.jpg" class="mb-2 mt-1" alt="{{this.product.name}}" style="width:100px;height:100px;"></a><br>
+         </div>
+         <div class="col-8 pt-2 pb-2">
+            <div class="row">
+               <div class="col-md-6 my-auto">
+                  <h5 class="text-center">{{this.status}}</h5>
+                  <span>Deliver to:</span><br>
+                  <span class="font-weight-bold">{{this.deliveryDetails.name}}</span><br>
+                  <span>{{this.deliveryDetails.address}}</span><br>
+                  <span>{{this.deliveryDetails.pincode}}<span><br>
+                  <span>Mob: {{this.deliveryDetails.mobile}}<span>
+                  <h6 class="mt-1">Order Total: <span class="text-success">₹{{this.totalAmount}}</span></h6>
+               </div>
+               <div class="col-md-6 my-auto text-center">
+                  <a href="/view-order/{{this._id}}" class="btn btn-primary btn-sm">View Order</a>
+               </div>
+            </div>
+         </div>
+      </div>
+      {{/each}}
    </div>
 </section>

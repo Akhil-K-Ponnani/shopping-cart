@@ -176,44 +176,52 @@ module.exports = {
   },
   getTotalAmount:function(userId) {
      return new Promise(async(resolve, reject) => {
-        let total = await db.get().collection(collections.CART_COLLECTION).aggregate([
-           {
-              $match:{user:objectId(userId)}
-           },
-           {
-              $unwind:'$products'
-           },
-           {
-              $project:
+        let cart = await db.get().collection(collections.CART_COLLECTION).findOne({user:objectId(userId)})
+        if(cart.products.length > 0)
+        {
+           let total = await db.get().collection(collections.CART_COLLECTION).aggregate([
               {
-                 item:'$products.item',
-                 quantity:'$products.quantity'
-              }
-           },
-           {
-              $lookup:
+                 $match:{user:objectId(userId)}
+              },
               {
-                 from:collections.PRODUCT_COLLECTION,
-                 localField:'item',
-                 foreignField:'_id',
-                 as:'product'
-              }
-           },
-           {
-              $project:
+                 $unwind:'$products'
+              },
               {
-                 item:1, quantity:1, product:{$arrayElemAt:['$product', 0]}
-              }
-           },
-           {
-              $group:
+                 $project:
+                 {
+                    item:'$products.item',
+                    quantity:'$products.quantity'
+                 }
+              },
               {
-                 _id:null,
-                 total:{$sum:{$multiply:['$quantity', '$product.price']}}
+                 $lookup:
+                 {
+                    from:collections.PRODUCT_COLLECTION,
+                    localField:'item',
+                    foreignField:'_id',
+                    as:'product'
+                 }
+              },
+              {
+                 $project:
+                 {
+                    item:1, quantity:1, product:{$arrayElemAt:['$product', 0]}
+                 }
+              },
+              {
+                 $group:
+                 {
+                    _id:null,
+                    total:{$sum:{$multiply:['$quantity', '$product.price']}}
+                 }
               }
-           }
-        ]).toArray()
-        resolve(total[0].total)
+           ]).toArray()
+              resolve(total[0].total)
+         } 
+         else
+         {
+            resolve(0)
+         }
      })
   },
   getCartProductList:function(userId) {
@@ -224,7 +232,15 @@ module.exports = {
   },
   placeOrder:function(order, products, totalPrice) {
      return new Promise((resolve, reject) => {
+        if(products[0].buyNow)
+        {
+           products[0].item = objectId(products[0].item)
+           delete products[0].buyNow
+           var buyNow = true
+        }
         let status = order['payment-method']==='COD'?'Placed':'Pending'
+        if(status === Placed)
+           let date = [{status:'Placed', date:new Date()}]
         let orderObj = {
            user:objectId(order.user), 
            deliveryDetails:{
@@ -235,20 +251,30 @@ module.exports = {
            }, 
            products:products, 
            totalAmount:totalPrice,
-           paymentMethod:order['payment-method'], 
-           date:new Date(), 
-           status:status
+           paymentMethod:order['payment-method'],
+           date:date
+      //     status:status
         }
         db.get().collection(collections.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
-           db.get().collection(collections.CART_COLLECTION).removeOne({user:objectId(order.user)})
+           if(!buyNow)
+           {
+              db.get().collection(collections.CART_COLLECTION).removeOne({user:objectId(order.user)})
+           }
+           buyNow = null
            resolve(response.ops[0])
         })
      })
   },
   getUserOrders:function(userId) {
      return new Promise(async(resolve, reject) => {
-        let orders = await db.get().collection(collections.ORDER_COLLECTION).find({user:objectId(userId)}).toArray()
+        let orders = await db.get().collection(collections.ORDER_COLLECTION).find({user:objectId(userId)}).sort({_id:-1}).toArray()
         resolve(orders)
+     })
+  },
+  getOrderDetails:function(orderId) {
+     return new Promise(async(resolve, reject) => {
+        let order = await db.get().collection(collections.ORDER_COLLECTION).findOne({_id:objectId(orderId)})
+        resolve(order)
      })
   },
   getOrderProducts:function(orderId) {

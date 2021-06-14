@@ -1,28 +1,61 @@
 <header>
-   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="/admin">Admin Panel</a>
+   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="/admin"><h5>Shopping Cart <sup class="border border-white rounded pl-1 pr-1"><small>Admin</small></sup></h5></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-               <a class="nav-link" href="/admin">All Products<span class="sr-only">(current)</span></a>
+               <a class="nav-link text-white" href="/admin">All Products<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-               <a class="nav-link" href="/admin/categories">All Categories</a>
+               <a class="nav-link text-white" href="/admin/categories">All Categories</a>
             </li>
             <li class="nav-item">
-               <a class="nav-link" href="/admin/orders">All Orders</a>
+               <a class="nav-link text-white" href="/admin/orders">All Orders</a>
             </li>
             <li class="nav-item">
-               <a class="nav-link" href="/admin/users">All Users</a>
+               <a class="nav-link text-white" href="/admin/users">All Users</a>
             </li>
          </ul>
-         <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+         {{#if productSearch}}
+         <form action="/admin/search-product" method="GET" class="form-inline my-2 my-lg-0">   
+            <div class="input-group">
+               <input class="form-control" type="search" name="search" placeholder="Search Product">
+               <span class="input-group-btn">
+               <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+               </span>
+            </div>
          </form>
+         {{else if categorySearch}}
+         <form action="/admin/search-category" method="GET" class="form-inline my-2 my-lg-0">   
+            <div class="input-group">
+               <input class="form-control" type="search" name="search" placeholder="Search Category">
+               <span class="input-group-btn">
+               <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+               </span>
+            </div>
+         </form>
+         {{else if orderSearch}}
+         <form action="/admin/search-order" method="GET" class="form-inline my-2 my-lg-0">   
+            <div class="input-group">
+               <input class="form-control" type="search" name="search" placeholder="Search Order">
+               <span class="input-group-btn">
+               <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+               </span>
+            </div>
+         </form>
+         {{else if userSearch}}
+         <form action="/admin/search-user" method="GET" class="form-inline my-2 my-lg-0">   
+            <div class="input-group">
+               <input class="form-control" type="search" name="search" placeholder="Search User">
+               <span class="input-group-btn">
+               <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+               </span>
+            </div>
+         </form>
+         {{/if}}
       </div>
    </nav>
 </header>

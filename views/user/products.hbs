@@ -36,7 +36,7 @@
 
 <section>
    <div class="container-fluid mt-3">
-      <div class="row category-scrollmenu">
+      <div class="row scrollmenu">
          <div class="col-md-12">
             {{#each categories}}
             <a href="/view-category-products/{{this._id}}" style="text-decoration:none; color:black;">
@@ -66,10 +66,14 @@
                   <h6 class="card-title" style="height:2em;">{{this.name}}</h6>
                   <h6 class="card-text text-success">₹{{this.price}}</h6>
                <!--  <p class="card-text">{{this.description}}</p> -->
-                  <button class="btn btn-primary" onclick="addToCart('{{this._id}}')" style="width:7em;height:auto">Add to Cart</button>
+             </a>
+                  {{#if this.stock}}
+                  <button class="btn btn-primary mt-2" onclick="addToCart('{{this._id}}')" style="width:7em;height:auto">Add to Cart</button>
+                  {{else}}
+                  <button class="btn btn-outline-primary mt-2" style="width:7em;height:auto" disabled>Out of Stock</button>
+                  {{/if}}
                </div>
             </div>
-            </a>
          </div>
          {{/each}}
       </div>

@@ -1,15 +1,15 @@
 /* Hide scrollbar for Chrome, Safari and Opera */
-.category-scrollmenu::-webkit-scrollbar {
+.scrollmenu::-webkit-scrollbar {
   display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
-.category-scrollmenu {
+.scrollmenu {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
 
-.category-scrollmenu {
+.scrollmenu {
   overflow-x:auto;
   white-space:nowrap;
   display:block;

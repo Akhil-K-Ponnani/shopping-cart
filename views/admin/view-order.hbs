@@ -1,0 +1,79 @@
+<section>
+   <div class="container mt-4">
+      <div class="row">
+         <div class="col-md-12">
+            <h2 class="text-center">View Order</h2>
+            <form action="/admin/edit-order-status/{{order._id}}" method="POST" onchange="orderUpdateErr()">
+              <div class="form-group">
+               <label for="name">Name</label>
+               <input type="text" name="name" value="{{order.deliveryDetails.name}}" class="form-control" style="background:white;" disabled>
+              </div>
+              <div class="form-group">
+               <label for="mobile">Mobile</label>
+               <a href="tel:{{order.deliveryDetails.mobile}}" style="text-decoration:none;"><input type="text" name="mobile" value="{{order.deliveryDetails.mobile}}" class="form-control" style="background:white;" disabled></a>
+              </div>
+              <div class="form-group">
+               <label for="address">Address</label>
+               <textarea rows="3" type="text" name="address" class="form-control" style="background:white;" disabled>{{order.deliveryDetails.address}}</textarea>
+              </div>
+              <div class="form-group">
+               <label for="pincode">Pincode</label>
+               <input type="number" name="pincode" value="{{order.deliveryDetails.pincode}}" class="form-control" style="background:white;" disabled>
+              </div>
+              <div class="form-group">
+               <label for="products">Products</label>
+               {{#each products}}
+               <a href="/view-product/{{this.product._id}}" style="text-decoration:none;"><input type="text" name="{{this.product.name}}" value="{{this.product.name}} : {{this.quantity}}" class="form-control mb-2" style="background:white;" disabled></a>
+               {{/each}}
+              </div>
+              <div class="form-group">
+               <label for="totalAmount">Total Amount</label>
+               <input type="text" name="totalAmount" value="₹{{order.totalAmount}}" class="form-control" style="background:white;" disabled>
+              </div>
+              <div class="form-group">
+               <label for="paymentMethod">Payment Method</label>
+               <input type="text" name="paymentMethod" value="{{order.paymentMethod}}" class="form-control" style="background:white;" disabled>
+              </div>
+              <div class="form-group">
+               <label for="status">Status</label>
+               <select class="custom-select mr-sm-2" name="status" id="inlineFormCustomSelect">
+                  <option value="Placed" {{order.currentStatus.Placed}}>Placed</option>
+                  <option value="Confirmed" {{order.currentStatus.Confirmed}}>Confirmed</option>
+                  <option value="Shipped" {{order.currentStatus.Shipped}}>Shipped</option>
+                  <option value="Out of Delivery" {{order.currentStatus.OutofDelivery}}>Out of Delivery</option>
+                  <option value="Delivered" {{order.currentStatus.Delivered}}>Delivered</option>
+                  <option value="Cancelled" {{order.currentStatus.Cancelled}}>Cancelled</option>
+               </select>
+               {{#if orderUpdateErr}}
+                  <small class="text-danger" id="orderUpdateErr">{{orderUpdateErr}}</small>
+               {{/if}}
+              </div>
+               <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+         </div>
+      </div>
+   </div>
+</section>
+
+<section>
+   <div class="container mt-3">
+      <div class="row">
+         <div class="col-md-12 text-muted">
+            <small>
+            {{#each order.status}}
+            <label>{{this.name}}: {{this.date}}</label>
+            {{/each}}
+            </small>
+         </div>
+      </div>
+   </div>
+</section>
+
+
+
+<script>
+function orderUpdateErr()
+{
+   document.getElementById('orderUpdateErr').style.visibility = 'hidden'
+}
+</script>

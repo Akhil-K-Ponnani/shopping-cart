@@ -109,6 +109,66 @@ module.exports = {
       resolve(orders);
     })
   },
+  getOrderDetails:function(orderId) {
+     return new Promise(async(resolve, reject) => {
+        let order = await db.get().collection(collections.ORDER_COLLECTION).findOne({_id:objectId(orderId)})
+        resolve(order)
+     })
+  },
+  getOrderProducts:function(orderId) {
+     return new Promise(async(resolve, reject) => {
+        let orderItems = await db.get().collection(collections.ORDER_COLLECTION).aggregate([
+           {
+              $match:{_id:objectId(orderId)}
+           },
+           {
+              $unwind:'$products',
+           },
+           {
+              $project:
+              {
+                 item:'$products.item',
+                 quantity:'$products.quantity'
+              }
+           },
+           {
+              $lookup:
+              {
+                 from:collections.PRODUCT_COLLECTION,
+                 localField:'item',
+                 foreignField:'_id',
+                 as:'product'
+              }
+           },
+           {
+              $project:
+              {
+                 item:1, quantity:1, product:{$arrayElemAt:['$product', 0]}
+              }
+           }
+        ]).toArray()
+        resolve(orderItems)
+     })
+  },
+  updateOrderStatus:function(orderId, status) {
+     return new Promise(async(resolve, reject) => {
+        let order = await db.get().collection(collections.ORDER_COLLECTION).findOne({_id:objectId(orderId)})
+        let statusExist = order.status.findIndex(statusDetails => statusDetails.name == status)
+        if(statusExist===-1)
+        {
+           statusObj = {name:status, date:new Date()}
+           db.get().collection(collections.ORDER_COLLECTION).updateOne({_id:objectId(orderId)},
+           {
+              $push:{status:statusObj}
+           }).then((response) => {
+              response.status = true
+              resolve(response)
+           })
+        }
+        else
+           resolve({status:false})
+     })
+  },
   viewUsers:function() {
     return new Promise(async(resolve, reject) => {
       let users = await db.get().collection(collections.USER_COLLECTION).find().toArray();

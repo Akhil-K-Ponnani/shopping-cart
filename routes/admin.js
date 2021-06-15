@@ -122,12 +122,46 @@ router.get('/orders',verifyLogin, function(req, res, next) {
     let slno = 1
     orders.forEach(order => {
        order.slno = slno
+       order.currentStatus = order.status[order.status.length-1].name
+       if(order.currentStatus == 'Delivered')
+          order.Delivered = true
+       else if(order.currentStatus == 'Cancelled')
+          order.Cancelled = true
+       order.currentStatusDate = order.status[order.status.length-1].date.toDateString()+', '+order.status[order.status.length-1].date.toLocaleTimeString()
        slno++
     })
     slno = null
     res.render('admin/orders', {orders, orderSearch:true, admin:true});
   })
 });
+
+router.get('/view-order/:id', async function(req, res, next) {
+   let order = await productHelpers.getOrderDetails(req.params.id)
+   let products = await productHelpers.getOrderProducts(req.params.id)
+  order.status.reverse()
+   order.status[0].name = order.status[0].name.replace(/ /g,'');
+   order.currentStatus = {}
+   order.currentStatus[order.status[0].name] = 'selected'
+   order.status.forEach(statusDetails => {
+      statusDetails.date = statusDetails.date.toDateString()+', '+statusDetails.date.toLocaleTimeString()
+   })
+   res.render('admin/view-order', {order, products, orderUpdateErr:req.session.orderUpdateErr, admin:true})
+   req.session.orderUpdateErr = false
+})
+
+router.post('/edit-order-status/:id', function(req, res, next) {
+   productHelpers.updateOrderStatus(req.params.id, req.body.status).then((response) => {
+      if(response.status)
+      {
+         res.redirect('/admin/orders')
+      }
+      else
+      {
+         req.session.orderUpdateErr = 'The Order has already '+req.body.status
+         res.redirect('/admin/view-order/'+req.params.id)
+      }
+   })
+})
 
 router.get('/users',verifyLogin, function(req, res, next) {
   productHelpers.viewUsers().then((users) => {

@@ -189,15 +189,26 @@ router.get('/order-success', function(req, res, next) {
 
 router.get('/orders', async function(req, res, next) {
    let orders = await userHelpers.getUserOrders(req.session.user._id)
+   orderCount = null
+   if(orders.length > 0)
+      orderCount = orders.length
    orders.forEach(order => {
       order.product = order.products[0].item
+      order.status.reverse()
+      order.currentStatus = order.status[0].name
    })
-   res.render('user/orders', {user:req.session.user, orders})
+   res.render('user/orders', {user:req.session.user, orders, orderCount})
 })
 
 router.get('/view-order/:id', async function(req, res, next) {
-   let order = await userHelpers.getOrderDetails(req.params.id)
-   let products = await userHelpers.getOrderProducts(req.params.id)
+   let order = await productHelpers.getOrderDetails(req.params.id)
+   let products = await productHelpers.getOrderProducts(req.params.id)
+   order.status.reverse()
+   order.currentStatus = order.status[0].name
+   order.currentStatusDate = order.status[0].date.toDateString()+','+order.status[0].date.toLocaleTimeString()
+   order.status.forEach(statusDetails => {
+      statusDetails.date = statusDetails.date.toDateString()+', '+statusDetails.date.toLocaleTimeString()
+   })
    res.render('user/view-order', {user:req.session.user, order, products})
 })
 

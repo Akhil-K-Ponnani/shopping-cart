@@ -238,9 +238,9 @@ module.exports = {
            delete products[0].buyNow
            var buyNow = true
         }
-        let status = order['payment-method']==='COD'?'Placed':'Pending'
-        if(status === Placed)
-           let date = [{status:'Placed', date:new Date()}]
+        let orderStatus = order['payment-method']==='COD'?'Placed':'Pending'
+        if(orderStatus === 'Placed')
+           var status = [{name:'Placed', date:new Date()}]
         let orderObj = {
            user:objectId(order.user), 
            deliveryDetails:{
@@ -252,7 +252,7 @@ module.exports = {
            products:products, 
            totalAmount:totalPrice,
            paymentMethod:order['payment-method'],
-           date:date
+           status:status
       //     status:status
         }
         db.get().collection(collections.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
@@ -269,47 +269,6 @@ module.exports = {
      return new Promise(async(resolve, reject) => {
         let orders = await db.get().collection(collections.ORDER_COLLECTION).find({user:objectId(userId)}).sort({_id:-1}).toArray()
         resolve(orders)
-     })
-  },
-  getOrderDetails:function(orderId) {
-     return new Promise(async(resolve, reject) => {
-        let order = await db.get().collection(collections.ORDER_COLLECTION).findOne({_id:objectId(orderId)})
-        resolve(order)
-     })
-  },
-  getOrderProducts:function(orderId) {
-     return new Promise(async(resolve, reject) => {
-        let orderItems = await db.get().collection(collections.ORDER_COLLECTION).aggregate([
-           {
-              $match:{_id:objectId(orderId)}
-           },
-           {
-              $unwind:'$products',
-           },
-           {
-              $project:
-              {
-                 item:'$products.item',
-                 quantity:'$products.quantity'
-              }
-           },
-           {
-              $lookup:
-              {
-                 from:collections.PRODUCT_COLLECTION,
-                 localField:'item',
-                 foreignField:'_id',
-                 as:'product'
-              }
-           },
-           {
-              $project:
-              {
-                 item:1, quantity:1, product:{$arrayElemAt:['$product', 0]}
-              }
-           }
-        ]).toArray()
-        resolve(orderItems)
      })
   },
   generateRasorpay:function(orderId, total) {

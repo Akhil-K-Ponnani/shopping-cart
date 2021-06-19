@@ -12,6 +12,8 @@ var instance = new Razorpay({
 module.exports = {
    doSignup:function(userData) {
       return new Promise(async(resolve, reject) => {
+         userData.date = new Date()
+         userData.active = true
          response = {}
          let user = await db.get().collection(collections.USER_COLLECTION).findOne({email:userData.email});
          if(user)
@@ -39,19 +41,32 @@ module.exports = {
           bcrypt.compare(userData.password, user.password).then((status) => {
             if(status)
             {
-               response.user = user
-               response.status = true
-               resolve(response)
+               if(user.active)
+               {
+                 response.user = user
+                 response.status = true
+                 resolve(response)
+               }
+               else
+               {
+                 response.logginErr = "This account was Blocked. Please contact Admin"
+                 response.status = false
+                 resolve(response)
+               }
             }
             else
             {
-              resolve({status:false})
+              response.logginErr = "Invalid Email or Password"
+              response.status = false
+              resolve(response)
             }
           })
         }
         else
         {
-          resolve({status:false})
+          response.logginErr = "Invalid Email or Password"
+          response.status = false
+          resolve(response)
         }
     }) 
   },
@@ -239,8 +254,11 @@ module.exports = {
            var buyNow = true
         }
         let orderStatus = order['payment-method']==='COD'?'Placed':'Pending'
+        status = []
         if(orderStatus === 'Placed')
-           var status = [{name:'Placed', date:new Date()}]
+           status = [{name:'Placed', date:new Date()}]
+        else
+           status = [{name:'Pending', date:new Date()}]
         let orderObj = {
            user:objectId(order.user), 
            deliveryDetails:{
@@ -253,7 +271,6 @@ module.exports = {
            totalAmount:totalPrice,
            paymentMethod:order['payment-method'],
            status:status
-      //     status:status
         }
         db.get().collection(collections.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
            if(!buyNow)
@@ -301,14 +318,55 @@ module.exports = {
   },
   changePaymentStatus:function(orderId) {
      return new Promise((resolve, reject) => {
+        let status = [{name:'Placed', date:new Date()}]
         db.get().collection(collections.ORDER_COLLECTION).updateOne({_id:objectId(orderId)}, 
         {
            $set:
            {
-              status:'Placed'
+              status:status
            }
         }).then(() => {
            resolve()
+        })
+     })
+  },
+  getUserDetails:function(userId) {
+     return new Promise(async(resolve, reject) => {
+        let user = await db.get().collection(collections.USER_COLLECTION).findOne({_id:objectId(userId)})
+        resolve(user)
+     })
+  },
+  changeUserStatus:function(userId, status) {
+     return new Promise((resolve, reject) => {
+        status = JSON.parse(status)
+        db.get().collection(collections.USER_COLLECTION).updateOne({_id:objectId(userId)},
+        {
+           $set:{active:status}
+        }).then((response) => {
+           resolve(response)
+        })
+     })
+  },
+  updateAccount:function(userData, userId) {
+     return new Promise((resolve, reject) => {
+       db.get().collection(collections.USER_COLLECTION).updateOne({_id:objectId(userId)},
+       {
+          $set:
+          {
+             name:userData.name,
+             email:userData.email
+          }
+       }).then((response) => {
+          resolve(response)
+       })
+     });
+  },
+  deleteUser:function(userId) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.USER_COLLECTION).removeOne({_id:objectId(userId)}).then((response) => {
+           db.get().collection(collections.CART_COLLECTION).removeOne({user:objectId(userId)})
+           db.get().collection(collections.ORDER_COLLECTION).removeMany({user:objectId(userId)})
+           resolve(response)
         })
      })
   }

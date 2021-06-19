@@ -2,6 +2,7 @@ var express = require('express');
 var fs = require('fs');
 var router = express.Router();
 var productHelpers = require('../helpers/product-helpers')
+var userHelpers = require('../helpers/user-helpers')
 
 verifyLogin = function(req, res, next) {
    if(req.session.adminLoggedIn)
@@ -51,7 +52,7 @@ router.post('/login', function(req, res, next) {
       }
       else
       {
-         req.session.adminLoginErr = 'Invalid Email or Password';
+         req.session.adminLoginErr = response.logginErr;
          res.redirect('/admin/login');
       }
    })
@@ -95,6 +96,7 @@ router.get('/delete-product/:id', function(req, res, next) {
 router.get('/edit-product/:id', async function(req, res, next) {
   let product = await productHelpers.getProductDetails(req.params.id)
   let categories = await productHelpers.viewAllCategories()
+  product.date = product.date.toDateString()+', '+product.date.toLocaleTimeString()
   categories.forEach(category => {
      if(category._id.toString() === product.category.toString())
      {
@@ -138,28 +140,18 @@ router.get('/orders',verifyLogin, function(req, res, next) {
 router.get('/view-order/:id', async function(req, res, next) {
    let order = await productHelpers.getOrderDetails(req.params.id)
    let products = await productHelpers.getOrderProducts(req.params.id)
-  order.status.reverse()
-   order.status[0].name = order.status[0].name.replace(/ /g,'');
-   order.currentStatus = {}
-   order.currentStatus[order.status[0].name] = 'selected'
+   order.status.reverse()
+   order.currentStatus = order.status[0].name
+   order[order.status[0].name.replace(/ /g,'')] = true
    order.status.forEach(statusDetails => {
       statusDetails.date = statusDetails.date.toDateString()+', '+statusDetails.date.toLocaleTimeString()
    })
-   res.render('admin/view-order', {order, products, orderUpdateErr:req.session.orderUpdateErr, admin:true})
-   req.session.orderUpdateErr = false
+   res.render('admin/view-order', {order, products, admin:true})
 })
 
-router.post('/edit-order-status/:id', function(req, res, next) {
-   productHelpers.updateOrderStatus(req.params.id, req.body.status).then((response) => {
-      if(response.status)
-      {
-         res.redirect('/admin/orders')
-      }
-      else
-      {
-         req.session.orderUpdateErr = 'The Order has already '+req.body.status
-         res.redirect('/admin/view-order/'+req.params.id)
-      }
+router.post('/update-order-status', function(req, res, next) {
+   productHelpers.updateOrderStatus(req.body.orderId, req.body.status).then((response) => {
+      res.json(response)
    })
 })
 
@@ -174,6 +166,67 @@ router.get('/users',verifyLogin, function(req, res, next) {
     res.render('admin/users', {users, userSearch:true, admin:true});
   })
 });
+
+router.get('/view-user/:id', verifyLogin, async function(req, res, next) {
+   let user = await userHelpers.getUserDetails(req.params.id)
+   let orders = await userHelpers.getUserOrders(req.params.id)
+   user.date = user.date.toDateString()+', '+user.date.toLocaleTimeString()
+   let orderCount = {}
+   orderCount.total = 0
+   orderCount.delivered = 0
+   orderCount.toDeliver = 0
+   orderCount.cancelled = 0
+   let deliveredOrCancelled = false
+   orderCount.total = orders.length
+   orders.forEach(order => {
+      order.status.forEach(statusDetails => {
+         if(statusDetails.name == 'Delivered')
+         {
+            orderCount.delivered++
+            deliveredOrCancelled = true
+         }
+         else if(statusDetails.name == 'Cancelled')
+         {
+            orderCount.cancelled++
+            deliveredOrCancelled = true
+         }
+      })
+      if(deliveredOrCancelled == false)
+      {
+         orderCount.toDeliver++
+      }
+      else
+      {
+         deliveredOrCancelled = false
+      }
+   })
+   deliveredOrCancelled = null
+   let orderCountPercent = {}
+   orderCountPercent.total = '0.0'
+   orderCountPercent.delivered = '0.0'
+   orderCountPercent.toDeliver = '0.0'
+   orderCountPercent.cancelled = '0.0'
+   if(orderCount.total > 0)
+   {
+      orderCountPercent.total = ((orderCount.total/orderCount.total)*100).toFixed(1)
+      orderCountPercent.delivered = ((orderCount.delivered/orderCount.total)*100).toFixed(1)
+      orderCountPercent.toDeliver = ((orderCount.toDeliver/orderCount.total)*100).toFixed(1)
+      orderCountPercent.cancelled = ((orderCount.cancelled/orderCount.total)*100).toFixed(1)
+   }
+   res.render('admin/view-user', {user, orderCount, orderCountPercent, admin:true})
+})
+
+router.post('/change-user-status', function(req, res, next) {
+   userHelpers.changeUserStatus(req.body.userId, req.body.status).then((response) => {
+      res.json(response)
+   })
+})
+
+router.get('/delete-user/:id', function(req, res, next) {
+   userHelpers.deleteUser(req.params.id).then((response) => {
+      res.redirect('/admin/users')
+   })
+})
 
 router.get('/categories', function(req, res, next) {
    productHelpers.viewAllCategories().then((categories) => {
@@ -205,6 +258,7 @@ router.post('/add-category', function(req, res, next) {
 
 router.get('/edit-category/:id', async function(req, res, next) {
    let category = await productHelpers.getCategoryDetails(req.params.id)
+   category.date = category.date.toDateString()+', '+category.date.toLocaleTimeString()
    res.render('admin/edit-category', {category, categorySearch:true, admin:true})
 });
 

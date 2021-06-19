@@ -1,0 +1,100 @@
+<section>
+   <div class="container mt-4">
+      <div class="row">
+         <div class="col-md-12">
+            <h2 class="text-center">View User</h2>
+            <form action="">
+              <div class="form-group">
+               <label for="name">Name</label>
+               <input type="text" name="name" value="{{user.name}}" class="form-control" style="background:white;" disabled>
+              </div>
+              <div class="form-group">
+               <label for="email">Email</label>
+               <input type="email" name="email" value="{{user.email}}" class="form-control" style="background:white;" disabled>
+              </div>
+              <div class="form-group">
+               <label for="status">Status</label>
+               {{#if user.active}}
+               <input type="text" name="status" value="Active" class="form-control" style="background:white;" disabled>
+               {{else}}
+               <input type="text" name="status" value="Blocked" class="form-control" style="background:white;" disabled>
+               {{/if}}
+              </div>
+              <div class="form-group">
+                 <label for="orderStatus">Order Status</label>
+                 <div class="form-row mb-2">
+                     <div class="col-6">
+                        <input type="text" value="Total" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCount.total}}" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCountPercent.total}}%" class="form-control" style="background:white;" disabled>
+                     </div>
+                 </div>
+                 <div class="form-row mb-2">
+                     <div class="col-6">
+                        <input type="text" value="Delivered" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCount.delivered}}" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCountPercent.delivered}}%" class="form-control" style="background:white;" disabled>
+                     </div>
+                 </div>
+                 <div class="form-row mb-2">
+                     <div class="col-6">
+                        <input type="text" value="To be Delivered" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCount.toDeliver}}" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCountPercent.toDeliver}}%" class="form-control" style="background:white;" disabled>
+                     </div>
+                 </div>
+                 <div class="form-row mb-2">
+                     <div class="col-6">
+                        <input type="text" value="Cancelled" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCount.cancelled}}" class="form-control" style="background:white;" disabled>
+                     </div>
+                     <div class="col">
+                        <input type="text" value="{{orderCountPercent.cancelled}}%" class="form-control" style="background:white;" disabled>
+                     </div>
+                 </div>
+              </div>
+            </form>
+            {{#if user.active}}
+            <button class="btn btn-danger" onclick="changeUserStatus('{{user._id}}', false)" style="width:8em;">Block User</button>
+            {{else}}
+            <button class="btn btn-success" onclick="changeUserStatus('{{user._id}}', true)" style="width:8em;">Unblock User</button>
+            {{/if}}
+            <div class="mt-3 text-muted">
+            <small>Joined On: {{user.date}}</small>
+            </div>
+         </div>
+      </div>
+   </div>
+</section>
+
+
+
+<script>
+   function changeUserStatus(userId, status)
+   {
+      $.ajax({
+         url:'/admin/change-user-status',
+         method:'post',
+         data:{
+           userId, status
+         },
+         success:((response) => {
+            location.reload()
+         })
+      })
+   }
+</script>

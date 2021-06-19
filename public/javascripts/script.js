@@ -82,6 +82,34 @@ $(document).ready(function()
     }
   })
  
+  $("#edit-account").validate(
+  {
+    rules:
+    {
+      name:
+      {
+        required:true
+      },
+      email:
+      {
+        required:true,
+        email:true
+      },
+      password:
+      {
+        required:true,
+        minlength:8,
+        maxlength:15
+      }
+    },
+    messages:
+    {
+      name:"<small class='text-danger'>Please enter your Name.</small>",
+      email:"<small class='text-danger'>Please enter a valid Email.</small>",
+      password:"<small class='text-danger'>Password must be 8-15 characters.</small>"
+    }
+  })
+ 
   $("#add-product").validate(
   {
     rules:

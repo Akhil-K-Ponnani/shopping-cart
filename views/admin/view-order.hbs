@@ -3,7 +3,7 @@
       <div class="row">
          <div class="col-md-12">
             <h2 class="text-center">View Order</h2>
-            <form action="/admin/edit-order-status/{{order._id}}" method="POST" onchange="orderUpdateErr()">
+            <form action="">
               <div class="form-group">
                <label for="name">Name</label>
                <input type="text" name="name" value="{{order.deliveryDetails.name}}" class="form-control" style="background:white;" disabled>
@@ -23,7 +23,14 @@
               <div class="form-group">
                <label for="products">Products</label>
                {{#each products}}
-               <a href="/view-product/{{this.product._id}}" style="text-decoration:none;"><input type="text" name="{{this.product.name}}" value="{{this.product.name}} : {{this.quantity}}" class="form-control mb-2" style="background:white;" disabled></a>
+               <div class="form-row mb-2">
+                  <div class="col-9">
+                     <a href="/view-product/{{this.product._id}}" style="text-decoration:none;"><input type="text" name="{{this.product.name}}" value="{{this.product.name}}" class="form-control" style="background:white;" disabled></a>
+                  </div>
+                  <div class="col">
+                     <a href="/view-product/{{this.product._id}}" style="text-decoration:none;"><input type="text" name="{{this.product.name}}" value="{{this.quantity}}" class="form-control" style="background:white;" disabled></a>
+                  </div>
+               </div>
                {{/each}}
               </div>
               <div class="form-group">
@@ -36,20 +43,27 @@
               </div>
               <div class="form-group">
                <label for="status">Status</label>
-               <select class="custom-select mr-sm-2" name="status" id="inlineFormCustomSelect">
-                  <option value="Placed" {{order.currentStatus.Placed}}>Placed</option>
-                  <option value="Confirmed" {{order.currentStatus.Confirmed}}>Confirmed</option>
-                  <option value="Shipped" {{order.currentStatus.Shipped}}>Shipped</option>
-                  <option value="Out of Delivery" {{order.currentStatus.OutofDelivery}}>Out of Delivery</option>
-                  <option value="Delivered" {{order.currentStatus.Delivered}}>Delivered</option>
-                  <option value="Cancelled" {{order.currentStatus.Cancelled}}>Cancelled</option>
-               </select>
-               {{#if orderUpdateErr}}
-                  <small class="text-danger" id="orderUpdateErr">{{orderUpdateErr}}</small>
-               {{/if}}
+               <input type="text" name="status" value="{{order.currentStatus}}" class="form-control" style="background:white;" disabled>
               </div>
-               <button type="submit" class="btn btn-success">Submit</button>
             </form>
+            {{#unless order.Cancelled}}
+            {{#if order.Pending}}
+            <button class="btn btn-primary" style="width:5em;" onclick="updateOrderStatus('{{order._id}}', 'Placed')">Place</button>
+            {{else if order.Placed}}
+            <button class="btn btn-primary" style="width:5em;" onclick="updateOrderStatus('{{order._id}}', 'Confirmed')">Confirm</button>
+            {{else if order.Confirmed}}
+            <button class="btn btn-primary" style="width:5em;" onclick="updateOrderStatus('{{order._id}}', 'Shipped')">Ship</button>
+            {{else if order.Shipped}}
+            <button class="btn btn-primary" style="width:5em;" onclick="updateOrderStatus('{{order._id}}', 'Out for Delivery')">OFD</button>
+            {{else if order.OutforDelivery}}
+            <button class="btn btn-success" style="width:5em;" onclick="updateOrderStatus('{{order._id}}', 'Delivered')">Deliver</button>
+            {{/if}}
+            {{/unless}}
+            {{#unless order.Cancelled}}
+            {{#unless order.Delivered}}
+            <button class="btn btn-danger ml-2" style="width:5em;" onclick="updateOrderStatus('{{order._id}}', 'Cancelled')">Cancel</button>
+            {{/unless}}
+            {{/unless}}
          </div>
       </div>
    </div>
@@ -71,9 +85,19 @@
 
 
 
+
 <script>
-function orderUpdateErr()
-{
-   document.getElementById('orderUpdateErr').style.visibility = 'hidden'
-}
+   function updateOrderStatus(orderId, status)
+   {
+      $.ajax({
+         url:'/admin/update-order-status',
+         method:'post',
+         data:{
+            orderId, status
+         },
+         success:((response) => {
+            location.reload()
+         })
+      })
+   }
 </script>

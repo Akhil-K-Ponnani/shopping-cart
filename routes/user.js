@@ -84,7 +84,7 @@ router.post('/login', function(req, res, next) {
      }
      else
      {
-       req.session.userLoginErr = "Invalid Email or Password";
+       req.session.userLoginErr = response.logginErr;
        res.redirect('/login');
      }
    });
@@ -194,6 +194,7 @@ router.get('/orders', async function(req, res, next) {
       orderCount = orders.length
    orders.forEach(order => {
       order.product = order.products[0].item
+      console.log(order.status)
       order.status.reverse()
       order.currentStatus = order.status[0].name
    })
@@ -259,8 +260,64 @@ router.get('/search-product', function(req, res, next) {
    })
 })
 
-router.get('/account', function(req, res, next) {
-   res.render('user/account')
+router.get('/account', async function(req, res, next) {
+   let user = await userHelpers.getUserDetails(req.session.user._id)
+   user.date = user.date.toDateString()
+   let orders = await userHelpers.getUserOrders(req.session.user._id)
+   let orderCount = {}
+   orderCount.total = 0
+   orderCount.delivered = 0
+   orderCount.toDeliver = 0
+   orderCount.cancelled = 0
+   let deliveredOrCancelled = false
+   orderCount.total = orders.length
+   orders.forEach(order => {
+      order.status.forEach(statusDetails => {
+         if(statusDetails.name == 'Delivered')
+         {
+            orderCount.delivered++
+            deliveredOrCancelled = true
+         }
+         else if(statusDetails.name == 'Cancelled')
+         {
+            orderCount.cancelled++
+            deliveredOrCancelled = true
+         }
+      })
+      if(deliveredOrCancelled == false)
+      {
+         orderCount.toDeliver++
+      }
+      else
+      {
+         deliveredOrCancelled = false
+      }
+   })
+   deliveredOrCancelled = null
+   let orderCountPercent = {}
+   orderCountPercent.total = 0
+   orderCountPercent.delivered = 0
+   orderCountPercent.toDeliver = 0
+   orderCountPercent.cancelled = 0
+   if(orderCount.total > 0)
+   {
+      orderCountPercent.total = (orderCount.total/orderCount.total)*100
+      orderCountPercent.delivered = (orderCount.delivered/orderCount.total)*100
+      orderCountPercent.toDeliver = (orderCount.toDeliver/orderCount.total)*100
+      orderCountPercent.cancelled = (orderCount.cancelled/orderCount.total)*100
+   }
+   res.render('user/account', {user, orderCount, orderCountPercent})
+})
+
+router.get('/edit-account/:id', async function(req, res, next) {
+   let user = await userHelpers.getUserDetails(req.params.id)
+   res.render('user/edit-account', {user})
+})
+
+router.post('/edit-account/:id', function(req, res, next) {
+   userHelpers.updateAccount(req.body, req.params.id).then((response) => {
+      res.redirect('/account')
+   })
 })
 
 module.exports = router;

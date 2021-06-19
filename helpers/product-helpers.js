@@ -7,6 +7,7 @@ module.exports = {
   addProduct:function(product, callback) {
     product.price = parseInt(product.price)
     product.category = objectId(product.category)
+    product.date = new Date()
     if(product.stock)
        product.stock = true
     else
@@ -31,21 +32,20 @@ module.exports = {
           }
           else
           {
-             resolve({status:false})
+             response.logginErr = "Invalid Email or Password"
+             response.status = false
+             resolve(response)
           }
         })
       }
       else
       {
-         resolve({status:false})
+         response.logginErr = "Invalid Email or Password"
+         response.status = false
+         resolve(response)
       }
     })
-  }, 
-/* viewAllProducts:function() {
-    return new Promise(async(resolve, reject) => {
-      let products = await db.get().collection(collections.PRODUCT_COLLECTION).find().toArray();
-      resolve(products);
-    })*/
+  },
     viewAllProducts:function() {
     return new Promise(async(resolve, reject) => {
        let categories = await db.get().collection(collections.CATEGORY_COLLECTION).aggregate([
@@ -152,21 +152,13 @@ module.exports = {
   },
   updateOrderStatus:function(orderId, status) {
      return new Promise(async(resolve, reject) => {
-        let order = await db.get().collection(collections.ORDER_COLLECTION).findOne({_id:objectId(orderId)})
-        let statusExist = order.status.findIndex(statusDetails => statusDetails.name == status)
-        if(statusExist===-1)
+        statusObj = {name:status, date:new Date()}
+        db.get().collection(collections.ORDER_COLLECTION).updateOne({_id:objectId(orderId)},
         {
-           statusObj = {name:status, date:new Date()}
-           db.get().collection(collections.ORDER_COLLECTION).updateOne({_id:objectId(orderId)},
-           {
-              $push:{status:statusObj}
-           }).then((response) => {
-              response.status = true
-              resolve(response)
-           })
-        }
-        else
-           resolve({status:false})
+           $push:{status:statusObj}
+        }).then((response) => {
+           resolve(response)
+        })
      })
   },
   viewUsers:function() {
@@ -177,6 +169,7 @@ module.exports = {
   },
   addCategory:function(category) {
      return new Promise((resolve, reject) => {
+        category.date = new Date()
         db.get().collection(collections.CATEGORY_COLLECTION).insertOne(category).then((data) => {
            resolve(data.ops[0]._id)
         })

@@ -1,19 +1,39 @@
 <section>
    <div class="container mt-3">
       <div class="row">
-         <div class="col-md-6">
-            <div class="card align-items-center text-center">
-            <i class="fas fa-user-circle mt-3 text-primary" style="font-size:8em;"></i>
-            <div class="card-body">
-            <h5 class="card-text">AKHIL K</h5>
-            <h6 class="card-text">akhilkponnanivj45@gmail.com</h6>
-            <h6 class="card-text">Joined on 18-03-2002</h6>
-            <button class="btn btn-primary">Edit</button>            
-            <button class="btn btn-danger">Logout</button>
-            </div>
-            </div>
+         <div class="col-md-12 align-items-center text-center">
+            <img src="/images/avatar.png" alt="Avatar" class="rounded-circle mb-2" style="height:10em;width:10em;">
+            <h5 class="card-text">{{user.name}}</h5>
+            <label class="card-text text-muted">{{user.email}}</label><br>
+            <label class="card-text text-muted">Joined on {{user.date}}</label><br>
+            <a href="/edit-account/{{user._id}}" class="btn btn-primary">Edit</a>            
+            <a href="/logout" class="btn btn-danger">Logout</a>
          </div>
-         <div class="col-md-6">
+      </div>
+   </div>
+</section>
+
+<section>
+   <div class="container mt-3">
+      <div class="row">
+         <div class="col-md-12">
+            <h4>Order Status</h4>
+            <small>Total Orders</small>
+            <div class="progress mb-3">
+            <div class="progress-bar bg-primary" role="progressbar" style="width:{{orderCountPercent.total}}%" aria-valuenow="{{orderCountPercent.total}}" aria-valuemin="0" aria-valuemax="100">{{orderCount.total}}</div>
+            </div>
+            <small>Delivered Orders</small>
+            <div class="progress mb-3">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{orderCountPercent.delivered}}%" aria-valuenow="{{orderCountPercent.delivered}}" aria-valuemin="0" aria-valuemax="100">{{orderCount.delivered}}</div>
+            </div>
+            <small>Orders to be Delivered</small>
+            <div class="progress mb-3">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: {{orderCountPercent.toDeliver}}%" aria-valuenow="{{orderCountPercent.toDeliver}}" aria-valuemin="0" aria-valuemax="100">{{orderCount.toDeliver}}</div>
+            </div>
+            <small>Cancelled Orders</small>
+            <div class="progress mb-3">
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{orderCountPercent.cancelled}}%" aria-valuenow="{{orderCountPercent.cancelled}}" aria-valuemin="0" aria-valuemax="100">{{orderCount.cancelled}}</div>
+            </div>
          </div>
       </div>
    </div>

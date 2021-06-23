@@ -11,7 +11,7 @@
          <div class="col-8 text-center my-auto">
             <div class="row">
                <div class="col-md-6 my-auto">
-                  <h6>{{this.product.name}}</h6>
+                  <h6 class="product-title">{{this.product.name}}</h6>
                   <h6 class="text-success">₹{{this.product.price}}</h6>
                </div>
                <div class="col-md-6 my-auto">
@@ -73,16 +73,23 @@
          },
          method:'post',
          success:(response) => {
-            if(response.removeProduct)
+            if(response.status)
             {
-               alert("Product Removed from Cart")
-               location.reload()
+               if(response.removeProduct)
+               {
+                  alert("Product Removed from Cart")
+                  location.reload()
+               }
+               else
+               {
+                  document.getElementById(productId).innerHTML = quantity+count
+                  document.getElementById('total').innerHTML = response.totalAmount
+                  document.getElementById('cart-count').innerHTML = response.cartCount
+               }
             }
             else
             {
-               document.getElementById(productId).innerHTML = quantity+count
-               document.getElementById('total').innerHTML = response.totalAmount
-               document.getElementById('cart-count').innerHTML = response.cartCount
+               location.href = "/login"
             }
          }
       })
@@ -99,8 +106,15 @@
          },
          method:'post',
          success:(response) => {
-            alert("Product Removed from Cart")
-            location.reload()
+            if(response.status)
+            {
+               alert("Product Removed from Cart")
+               location.reload()
+            }
+            else
+            {
+               location.href = "/login"
+            }
          }
       })
    }

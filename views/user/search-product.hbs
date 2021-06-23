@@ -12,8 +12,10 @@
             <div class="card align-items-center text-center">
                <img class="mt-3" src="/product-images/{{this._id}}.jpg" alt="{{this.name}}" style="height:6rem; width:6rem;">
                <div class="card-body">
-                  <h6 class="card-title" style="height:2em;">{{this.name}}</h6>
-                  <h6 class="card-text text-success">₹{{this.price}}</h6>
+                  <div style="height:2.7em; width:7em;">
+                     <h6 class="card-title product-title">{{this.name}}</h6>
+                  </div>
+                  <h6 class="card-text text-success limit-line-length" style="max-width:7em;">₹{{this.price}}</h6>
              </a>
                   {{#if this.stock}}
                   <button class="btn btn-primary mt-2" onclick="addToCart('{{this._id}}')" style="width:7em;height:auto">Add to Cart</button>

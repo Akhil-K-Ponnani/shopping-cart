@@ -165,7 +165,7 @@ module.exports = {
            {
               $pull:{products:{item:objectId(details.product)}}
            }).then((response) => {
-              resolve({removeProduct:true})
+              resolve({status:true, removeProduct:true})
            })
         }
         else
@@ -185,7 +185,7 @@ module.exports = {
         {
            $pull:{products:{item:objectId(details.product)}}
         }).then((response) => {
-           resolve(response)
+           resolve({status:true})
         })
      })
   },

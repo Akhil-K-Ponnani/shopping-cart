@@ -10,6 +10,10 @@ function addToCart(productId)
             count = parseInt(count)+1
             $('#cart-count').html(count)
          }
+         else
+         {
+            location.href = "/login"
+         }
       }
    })
 }
@@ -19,9 +23,28 @@ function addToCart(productId)
 
 function buyNow(productId)
 {
-  location.href="/place-order?product="+productId
+  location.href = "/place-order?product="+productId
 }
 
+
+
+
+
+
+
+
+//carousel touch Swipe
+
+$(document).ready(function() {
+  $(".carousel .carousel-inner").swipe({
+    swipeLeft: function() {
+      this.parent().carousel('next');
+    },
+    swipeRight: function() {
+      this.parent().carousel('prev');
+    }
+  });
+});
 
 
 

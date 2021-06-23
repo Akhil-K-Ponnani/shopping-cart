@@ -55,13 +55,20 @@ $('#checkout-form').submit((e) => {
       method:'post',
       data:$('#checkout-form').serialize(),
       success:((response) => {
-         if(response.codSuccess)
+         if(response.status)
          {
-            location.href = '/order-success'
+            if(response.codSuccess)
+            {
+               location.href = '/order-success'
+            }
+            else
+            {
+               razorpayPayment(response)
+            }
          }
          else
          {
-            razorpayPayment(response)
+            location.href = "/login"
          }
       })
    })

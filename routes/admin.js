@@ -59,18 +59,18 @@ router.post('/login', function(req, res, next) {
 });
 
 router.get('/logout', function(req, res, next) {
-   req.session.admin =null;
+   req.session.admin = null;
    req.session.adminLoggedIn = null;
-   res.redirect('/admin');
+   res.redirect('/admin/login');
 })
 
-router.get('/add-product', function (req, res, next) {
+router.get('/add-product', verifyLogin, function (req, res, next) {
   productHelpers.viewAllCategories().then((categories) => {
     res.render('admin/add-product', {categories, productSearch:true, admin:true});
   })
 });
 
-router.post('/add-product', function(req, res, next) {
+router.post('/add-product', verifyLogin, function(req, res, next) {
   productHelpers.addProduct(req.body, function(id) {
     let image = req.files.image;
     image.mv('./public/product-images/'+id+'.jpg', function(err, done) {
@@ -82,7 +82,7 @@ router.post('/add-product', function(req, res, next) {
   });
 });
 
-router.get('/delete-product/:id', function(req, res, next) {
+router.get('/delete-product/:id', verifyLogin, function(req, res, next) {
   productId = req.params.id
   productHelpers.deleteProduct(productId).then((response) => {
     fs.unlink('./public/product-images/'+productId+'.jpg', function(err) {
@@ -93,7 +93,7 @@ router.get('/delete-product/:id', function(req, res, next) {
   })
 });
 
-router.get('/edit-product/:id', async function(req, res, next) {
+router.get('/edit-product/:id', verifyLogin, async function(req, res, next) {
   let product = await productHelpers.getProductDetails(req.params.id)
   let categories = await productHelpers.viewAllCategories()
   product.date = product.date.toDateString()+', '+product.date.toLocaleTimeString()
@@ -106,8 +106,7 @@ router.get('/edit-product/:id', async function(req, res, next) {
   res.render('admin/edit-product', {product, categories, productSearch:true, admin:true});
 });
 
-router.post('/edit-product/:id', function(req, res, next) {
- console.log(req.body)
+router.post('/edit-product/:id', verifyLogin, function(req, res, next) {
   let id = req.params.id;
   productHelpers.updateProduct(req.params.id, req.body).then(() =>{
     res.redirect('/admin')
@@ -137,7 +136,7 @@ router.get('/orders',verifyLogin, function(req, res, next) {
   })
 });
 
-router.get('/view-order/:id', async function(req, res, next) {
+router.get('/view-order/:id', verifyLogin, async function(req, res, next) {
    let order = await productHelpers.getOrderDetails(req.params.id)
    let products = await productHelpers.getOrderProducts(req.params.id)
    order.status.reverse()
@@ -149,7 +148,7 @@ router.get('/view-order/:id', async function(req, res, next) {
    res.render('admin/view-order', {order, products, admin:true})
 })
 
-router.post('/update-order-status', function(req, res, next) {
+router.post('/update-order-status', verifyLogin, function(req, res, next) {
    productHelpers.updateOrderStatus(req.body.orderId, req.body.status).then((response) => {
       res.json(response)
    })
@@ -216,19 +215,19 @@ router.get('/view-user/:id', verifyLogin, async function(req, res, next) {
    res.render('admin/view-user', {user, orderCount, orderCountPercent, admin:true})
 })
 
-router.post('/change-user-status', function(req, res, next) {
+router.post('/change-user-status', verifyLogin, function(req, res, next) {
    userHelpers.changeUserStatus(req.body.userId, req.body.status).then((response) => {
       res.json(response)
    })
 })
 
-router.get('/delete-user/:id', function(req, res, next) {
+router.get('/delete-user/:id', verifyLogin, function(req, res, next) {
    userHelpers.deleteUser(req.params.id).then((response) => {
       res.redirect('/admin/users')
    })
 })
 
-router.get('/categories', function(req, res, next) {
+router.get('/categories', verifyLogin, function(req, res, next) {
    productHelpers.viewAllCategories().then((categories) => {
       let slno = 1
       categories.forEach(category => {
@@ -240,11 +239,11 @@ router.get('/categories', function(req, res, next) {
    })
 });
 
-router.get('/add-category', function(req, res, next) {
+router.get('/add-category', verifyLogin, function(req, res, next) {
    res.render('admin/add-category', {categorySearch:true, admin:true})
 });
 
-router.post('/add-category', function(req, res, next) {
+router.post('/add-category', verifyLogin, function(req, res, next) {
    productHelpers.addCategory(req.body).then((id) => {
       let image = req.files.image
       image.mv('./public/category-images/'+id+'.jpg', function(err, done) {
@@ -256,13 +255,13 @@ router.post('/add-category', function(req, res, next) {
    })
 });
 
-router.get('/edit-category/:id', async function(req, res, next) {
+router.get('/edit-category/:id', verifyLogin, async function(req, res, next) {
    let category = await productHelpers.getCategoryDetails(req.params.id)
    category.date = category.date.toDateString()+', '+category.date.toLocaleTimeString()
    res.render('admin/edit-category', {category, categorySearch:true, admin:true})
 });
 
-router.post('/edit-category/:id', function(req, res, next) {
+router.post('/edit-category/:id', verifyLogin, function(req, res, next) {
   let id = req.params.id;
   productHelpers.updateCategory(req.params.id, req.body).then(() =>{
     res.redirect('/admin/categories')
@@ -274,7 +273,7 @@ router.post('/edit-category/:id', function(req, res, next) {
   })
 });
 
-router.get('/delete-category/:id', function(req, res, next) {
+router.get('/delete-category/:id', verifyLogin, function(req, res, next) {
    categoryId = req.params.id
    productHelpers.deleteCategory(categoryId).then((response) => {
       fs.unlink('./public/category-images/'+categoryId+'.jpg', function(err) {
@@ -285,7 +284,7 @@ router.get('/delete-category/:id', function(req, res, next) {
    })
 });
 
-router.get('/search-product', function(req, res, next) {
+router.get('/search-product', verifyLogin, function(req, res, next) {
    productHelpers.searchProduct(req.query.search).then((products) => {
       let productCount = null
       if(products.length > 0)
@@ -300,7 +299,7 @@ router.get('/search-product', function(req, res, next) {
    })
 })
 
-router.get('/search-category', function(req, res, next) {
+router.get('/search-category', verifyLogin, function(req, res, next) {
    productHelpers.searchCategory(req.query.search).then((categories) => {
       let categoryCount = null
       if(categories.length > 0)
@@ -315,7 +314,7 @@ router.get('/search-category', function(req, res, next) {
    })
 })
 
-router.get('/search-order', function(req, res, next) {
+router.get('/search-order', verifyLogin, function(req, res, next) {
    productHelpers.searchOrder(req.query.search).then((orders) => {
       let orderCount = null
       if(orders.length > 0)
@@ -330,7 +329,7 @@ router.get('/search-order', function(req, res, next) {
    })
 })
 
-router.get('/search-user', function(req, res, next) {
+router.get('/search-user', verifyLogin, function(req, res, next) {
    productHelpers.searchUser(req.query.search).then((users) => {
       let userCount = null
       if(users.length > 0)

@@ -30,7 +30,7 @@ router.get('/', async function(req, res, next) {
            delete categories[i]
         }
      }
-    res.render('user/products', {categories, user, cartCount});
+    res.render('user/products', {title:'Home', categories, user, cartCount});
   })
 });
 
@@ -41,7 +41,7 @@ router.get('/login', function(req, res, next) {
   }
   else
     {
-      res.render('user/login',{loginErr:req.session.userLoginErr});
+      res.render('user/login',{title:'Login', loginErr:req.session.userLoginErr});
       req.session.userLoginErr = false;
     }
 });
@@ -53,7 +53,7 @@ router.get('/signup', function(req, res, next) {
    }
    else
    {
-     res.render('user/signup',{loginErr:req.session.userLoginErr});
+     res.render('user/signup',{title:'SignUp', loginErr:req.session.userLoginErr});
      req.session.userLoginErr = false;
    }
 });
@@ -108,7 +108,7 @@ router.get('/cart', verifyLogin, async function(req, res, next) {
    {
       totalAmount = await userHelpers.getTotalAmount(req.session.user._id)
    }
-   res.render('user/cart', {products, user:req.session.user, totalAmount, cartCount});
+   res.render('user/cart', {title:'Cart', products, user:req.session.user, totalAmount, cartCount});
 });
 
 router.get('/add-to-cart/:id', function(req, res, next) {
@@ -153,6 +153,11 @@ router.post('/remove-cart-product', function(req, res, next) {
 })
 
 router.get('/place-order', verifyLogin, async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
    let total = 0
    if(req.query.product)
    {
@@ -171,7 +176,7 @@ router.get('/place-order', verifyLogin, async function(req, res, next) {
    if(total === 0)
       res.redirect('/cart')
    else
-      res.render('user/place-order', {total, user:req.session.user})
+      res.render('user/place-order', {title:'Place Order', total, user:req.session.user, cartCount})
 })
 
 router.post('/place-order', async function(req, res, next) {
@@ -211,11 +216,21 @@ router.post('/place-order', async function(req, res, next) {
    }
 })
 
-router.get('/order-success', verifyLogin, function(req, res, next) {
-   res.render('user/order-success',{user:req.session.user})
+router.get('/order-success', verifyLogin, async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
+   res.render('user/order-success',{title:'Order Success', user:req.session.user, cartCount})
 })
 
 router.get('/orders', verifyLogin, async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
    let orders = await userHelpers.getUserOrders(req.session.user._id)
    orderCount = null
    if(orders.length > 0)
@@ -225,10 +240,15 @@ router.get('/orders', verifyLogin, async function(req, res, next) {
       order.status.reverse()
       order.currentStatus = order.status[0].name
    })
-   res.render('user/orders', {user:req.session.user, orders, orderCount})
+   res.render('user/orders', {title:'My Orders', user:req.session.user, cartCount, orders, orderCount})
 })
 
 router.get('/view-order/:id', verifyLogin, async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
    let order = await productHelpers.getOrderDetails(req.params.id)
    let products = await productHelpers.getOrderProducts(req.params.id)
    order.status.reverse()
@@ -237,7 +257,7 @@ router.get('/view-order/:id', verifyLogin, async function(req, res, next) {
    order.status.forEach(statusDetails => {
       statusDetails.date = statusDetails.date.toDateString()+', '+statusDetails.date.toLocaleTimeString()
    })
-   res.render('user/view-order', {user:req.session.user, order, products})
+   res.render('user/view-order', {title:'View Order', user:req.session.user, cartCount, order, products})
 })
 
 router.post('/verify-payment', function(req, res, next) {
@@ -257,7 +277,7 @@ router.get('/view-product/:id', async function(req, res, next) {
       cartCount = await userHelpers.getCartCount(req.session.user._id)
    }
    productHelpers.getProductDetails(req.params.id).then((product) => {
-      res.render('user/view-product', {product, user:req.session.user, cartCount})
+      res.render('user/view-product', {title:product.name, product, user:req.session.user, cartCount})
    })
 })
 
@@ -269,7 +289,7 @@ router.get('/view-category-products/:id', async function(req, res, next) {
    }
    productHelpers.viewCategoryProducts(req.params.id).then(async(products) => {
       let category = await productHelpers.getCategoryDetails(req.params.id)
-      res.render('user/view-category-products', {products, category, user:req.session.user, cartCount})
+      res.render('user/view-category-products', {title:category.name, products, category, user:req.session.user, cartCount})
    })
 })
 
@@ -283,11 +303,16 @@ router.get('/search-product', function(req, res, next) {
       {
          cartCount = await userHelpers.getCartCount(req.session.user._id)
       }
-      res.render('user/search-product', {products, user:req.session.user, productCount, cartCount})
+      res.render('user/search-product', {title:'Search Product', products, user:req.session.user, productCount, cartCount})
    })
 })
 
 router.get('/account', verifyLogin, async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
    let user = await userHelpers.getUserDetails(req.session.user._id)
    user.date = user.date.toDateString()
    let orders = await userHelpers.getUserOrders(req.session.user._id)
@@ -333,16 +358,21 @@ router.get('/account', verifyLogin, async function(req, res, next) {
       orderCountPercent.toDeliver = (orderCount.toDeliver/orderCount.total)*100
       orderCountPercent.cancelled = (orderCount.cancelled/orderCount.total)*100
    }
-   res.render('user/account', {user, orderCount, orderCountPercent})
+   res.render('user/account', {title:'My Account', user:req.session.user, cartCount, orderCount, orderCountPercent})
 })
 
-router.get('/edit-account/:id', verifyLogin, async function(req, res, next) {
-   let user = await userHelpers.getUserDetails(req.params.id)
-   res.render('user/edit-account', {user})
+router.get('/edit-account', verifyLogin, async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
+   res.render('user/edit-account', {title:'Edit Profile', user:req.session.user, cartCount})
 })
 
-router.post('/edit-account/:id', verifyLogin, function(req, res, next) {
-   userHelpers.updateAccount(req.body, req.params.id).then((response) => {
+router.post('/edit-account', verifyLogin, function(req, res, next) {
+   userHelpers.updateAccount(req.body, req.session.user._id).then(async(response) => {
+      req.session.user = await userHelpers.getUserDetails(req.session.user._id)
       res.redirect('/account')
    })
 })

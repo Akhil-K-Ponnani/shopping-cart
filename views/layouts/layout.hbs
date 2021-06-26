@@ -11,7 +11,12 @@
       <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
       <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
       <link href="/stylesheets/style.css" type="text/css" rel="stylesheet">
-      <title>Hello, world!</title>
+      {{#if admin}}
+      <title>Shopping Cart Admin | {{{title}}}</title>
+      {{else}}
+      <title>Shopping Cart | {{{title}}}</title>
+      {{/if}}
+      <link rel="icon" href="/images/ShoppingCartIcon.png" type="image/x-icon">
    </head>
 <body>
    

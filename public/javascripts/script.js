@@ -118,6 +118,10 @@ $(document).ready(function()
         required:true,
         email:true
       },
+      mobile:
+      {
+         number:true
+      },
       password:
       {
         required:true,
@@ -129,6 +133,7 @@ $(document).ready(function()
     {
       name:"<small class='text-danger'>Please enter your Name.</small>",
       email:"<small class='text-danger'>Please enter a valid Email.</small>",
+      mobile:"<small class='text-danger'>Please enter a valid Mobile.</small>",
       password:"<small class='text-danger'>Password must be 8-15 characters.</small>"
     }
   })

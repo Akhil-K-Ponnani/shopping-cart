@@ -354,9 +354,15 @@ module.exports = {
           $set:
           {
              name:userData.name,
-             email:userData.email
+             email:userData.email,
+             mobile:userData.mobile,
+             address:userData.address
           }
        }).then((response) => {
+          if(userData.mobile == "")
+             db.get().collection(collections.USER_COLLECTION).updateOne({_id:objectId(userId)},{$unset:{mobile:1}})
+          if(userData.address == "")
+             db.get().collection(collections.USER_COLLECTION).updateOne({_id:objectId(userId)},{$unset:{address:1}})
           resolve(response)
        })
      });

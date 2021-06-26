@@ -26,7 +26,7 @@ router.get('/',verifyLogin, function(req, res, next) {
        })
     })
     slno = null
-    res.render('admin/products', {categories, productSearch:true, admin:true});
+    res.render('admin/products', {title:'All Products', categories, productSearch:true, admin:true});
   })
 });
 
@@ -37,7 +37,7 @@ router.get('/login', function(req, res, next) {
    }
    else
    {
-      res.render('admin/login', {loginErr:req.session.adminLoginErr, admin:true});
+      res.render('admin/login', {title:'Login', loginErr:req.session.adminLoginErr, admin:true});
       req.session.adminLoginErr = false;
    }
 });
@@ -66,7 +66,7 @@ router.get('/logout', function(req, res, next) {
 
 router.get('/add-product', verifyLogin, function (req, res, next) {
   productHelpers.viewAllCategories().then((categories) => {
-    res.render('admin/add-product', {categories, productSearch:true, admin:true});
+    res.render('admin/add-product', {title:'Add Product', categories, productSearch:true, admin:true});
   })
 });
 
@@ -103,7 +103,7 @@ router.get('/edit-product/:id', verifyLogin, async function(req, res, next) {
         category['selected'] = true
      }
   })
-  res.render('admin/edit-product', {product, categories, productSearch:true, admin:true});
+  res.render('admin/edit-product', {title:'Edit Product', product, categories, productSearch:true, admin:true});
 });
 
 router.post('/edit-product/:id', verifyLogin, function(req, res, next) {
@@ -132,7 +132,7 @@ router.get('/orders',verifyLogin, function(req, res, next) {
        slno++
     })
     slno = null
-    res.render('admin/orders', {orders, orderSearch:true, admin:true});
+    res.render('admin/orders', {title:'All Orders', orders, orderSearch:true, admin:true});
   })
 });
 
@@ -145,7 +145,7 @@ router.get('/view-order/:id', verifyLogin, async function(req, res, next) {
    order.status.forEach(statusDetails => {
       statusDetails.date = statusDetails.date.toDateString()+', '+statusDetails.date.toLocaleTimeString()
    })
-   res.render('admin/view-order', {order, products, admin:true})
+   res.render('admin/view-order', {title:'View Order', order, products, admin:true})
 })
 
 router.post('/update-order-status', verifyLogin, function(req, res, next) {
@@ -162,7 +162,7 @@ router.get('/users',verifyLogin, function(req, res, next) {
        slno++
     })
     slno = null
-    res.render('admin/users', {users, userSearch:true, admin:true});
+    res.render('admin/users', {title:'All Users', users, userSearch:true, admin:true});
   })
 });
 
@@ -212,7 +212,7 @@ router.get('/view-user/:id', verifyLogin, async function(req, res, next) {
       orderCountPercent.toDeliver = ((orderCount.toDeliver/orderCount.total)*100).toFixed(1)
       orderCountPercent.cancelled = ((orderCount.cancelled/orderCount.total)*100).toFixed(1)
    }
-   res.render('admin/view-user', {user, orderCount, orderCountPercent, admin:true})
+   res.render('admin/view-user', {title:'View User', user, orderCount, orderCountPercent, admin:true})
 })
 
 router.post('/change-user-status', verifyLogin, function(req, res, next) {
@@ -235,12 +235,12 @@ router.get('/categories', verifyLogin, function(req, res, next) {
          slno++
       })
       slno = null
-      res.render('admin/categories', {categories, categorySearch:true, admin:true})
+      res.render('admin/categories', {title:'All Categories', categories, categorySearch:true, admin:true})
    })
 });
 
 router.get('/add-category', verifyLogin, function(req, res, next) {
-   res.render('admin/add-category', {categorySearch:true, admin:true})
+   res.render('admin/add-category', {title:'Add Category', categorySearch:true, admin:true})
 });
 
 router.post('/add-category', verifyLogin, function(req, res, next) {
@@ -258,7 +258,7 @@ router.post('/add-category', verifyLogin, function(req, res, next) {
 router.get('/edit-category/:id', verifyLogin, async function(req, res, next) {
    let category = await productHelpers.getCategoryDetails(req.params.id)
    category.date = category.date.toDateString()+', '+category.date.toLocaleTimeString()
-   res.render('admin/edit-category', {category, categorySearch:true, admin:true})
+   res.render('admin/edit-category', {title:'Edit Category', category, categorySearch:true, admin:true})
 });
 
 router.post('/edit-category/:id', verifyLogin, function(req, res, next) {
@@ -295,7 +295,7 @@ router.get('/search-product', verifyLogin, function(req, res, next) {
          slno++
       })
       slno = null
-      res.render('admin/search-product', {products, productSearch:true, productCount, admin:true})
+      res.render('admin/search-product', {title:'Search Product', products, productSearch:true, productCount, admin:true})
    })
 })
 
@@ -310,7 +310,7 @@ router.get('/search-category', verifyLogin, function(req, res, next) {
          slno++
       })
       slno = null
-      res.render('admin/search-category', {categories, categorySearch:true, categoryCount, admin:true})
+      res.render('admin/search-category', {title:'Search Category', categories, categorySearch:true, categoryCount, admin:true})
    })
 })
 
@@ -325,7 +325,7 @@ router.get('/search-order', verifyLogin, function(req, res, next) {
          slno++
       })
       slno = null
-      res.render('admin/search-order', {orders, orderSearch:true, orderCount, admin:true})
+      res.render('admin/search-order', {title:'Search Order', orders, orderSearch:true, orderCount, admin:true})
    })
 })
 
@@ -340,7 +340,7 @@ router.get('/search-user', verifyLogin, function(req, res, next) {
          slno++
       })
       slno = null
-      res.render('admin/search-user', {users, userSearch:true, userCount, admin:true})
+      res.render('admin/search-user', {title:'Search User', users, userSearch:true, userCount, admin:true})
    })
 })
 

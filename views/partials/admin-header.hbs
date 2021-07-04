@@ -1,6 +1,7 @@
 <header>
    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="/admin"><h5>Shopping Cart <sup class="border border-white rounded pl-1 pr-1"><small>Admin</small></sup></h5></a>
+      {{#if admin.active}}
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
       </button>
@@ -13,11 +14,19 @@
                <a class="nav-link text-white" href="/admin/categories">All Categories</a>
             </li>
             <li class="nav-item">
+            <a class="nav-link text-white" href="/admin/banners">All Banners</a>
+            </li>
+            <li class="nav-item">
                <a class="nav-link text-white" href="/admin/orders">All Orders</a>
             </li>
             <li class="nav-item">
                <a class="nav-link text-white" href="/admin/users">All Users</a>
             </li>
+            {{#if admin.super}}
+            <li class="nav-item">
+               <a class="nav-link text-white" href="/admin/admins">All Admins</a>
+            </li>
+            {{/if}}
          </ul>
          {{#if productSearch}}
          <form action="/admin/search-product" method="GET" class="form-inline my-2 my-lg-0">   
@@ -32,6 +41,15 @@
          <form action="/admin/search-category" method="GET" class="form-inline my-2 my-lg-0">   
             <div class="input-group">
                <input class="form-control" type="search" name="search" placeholder="Search Category">
+               <span class="input-group-btn">
+               <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+               </span>
+            </div>
+         </form>
+         {{else if bannerSearch}}
+         <form action="/admin/search-banner" method="GET" class="form-inline my-2 my-lg-0">   
+            <div class="input-group">
+               <input class="form-control" type="search" name="search" placeholder="Search Banner">
                <span class="input-group-btn">
                <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
                </span>
@@ -55,7 +73,17 @@
                </span>
             </div>
          </form>
+         {{else if adminSearch}}
+         <form action="/admin/search-admin" method="GET" class="form-inline my-2 my-lg-0">   
+            <div class="input-group">
+               <input class="form-control" type="search" name="search" placeholder="Search Admin">
+               <span class="input-group-btn">
+               <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
+               </span>
+            </div>
+         </form>
          {{/if}}
       </div>
+      {{/if}}
    </nav>
 </header>

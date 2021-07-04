@@ -8,6 +8,19 @@ header {
 
 
 
+body{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+footer{
+    margin-top: auto;
+}
+
+
+
+
 /* Includes Scrollmenu /*
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollmenu::-webkit-scrollbar {
@@ -49,7 +62,7 @@ header {
 
 
 .carousel-indicators li {
-  height:10px;
-  width:10px;
+  height:8px;
+  width:8px;
   border-radius:100%;
 }

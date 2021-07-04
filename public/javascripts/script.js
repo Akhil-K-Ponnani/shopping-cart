@@ -42,7 +42,11 @@ $(document).ready(function() {
     },
     swipeRight: function() {
       this.parent().carousel('prev');
-    }
+    },
+    tap: function() {
+      if($(this).find('.carousel-item.active').attr('href') != "")
+        window.location = $(this).find('.carousel-item.active').attr('href');
+    },
   });
 });
 
@@ -257,6 +261,34 @@ $(document).ready(function()
     {
       name:"<small class='text-danger'>Please enter a category Name.</small>",
       displayName:"<small class='text-danger'>Please enter a category display Name.</small>"
+    }
+  })
+  
+  $("#add-admin").validate(
+  {
+    rules:
+    {
+      name:
+      {
+        required:true
+      },
+      email:
+      {
+        required:true,
+        email:true
+      },
+      password:
+      {
+        required:true,
+        minlength:8,
+        maxlength:15
+      }
+    },
+    messages:
+    {
+      name:"<small class='text-danger'>Please enter admin Name.</small>",
+      email:"<small class='text-danger'>Please enter a valid Email.</small>",
+      password:"<small class='text-danger'>Password must be 8-15 characters.</small>"
     }
   })
 })

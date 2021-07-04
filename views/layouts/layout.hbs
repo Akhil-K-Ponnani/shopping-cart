@@ -27,6 +27,12 @@
       {{/if}}
       <section style="margin-top:4.6em;"></section>
       {{{body}}}
+      <section class="mb-1"></section>  
+      {{#if admin}}
+      {{>admin-footer}}
+      {{else}}
+      {{>user-footer}}
+      {{/if}}
       
       <!-- Optional JavaScript -->
       <!-- jQuery first, then Popper.js, then Bootstrap JS -->

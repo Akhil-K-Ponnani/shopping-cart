@@ -1,0 +1,28 @@
+<footer class="pt-1 pb-1 text-center text-white bg-primary">
+   <small>
+         {{#if admin.active}}
+         <a href="/admin" class="text-white" style="text-decoration:none;">
+         <span style="margin-left:0.2em; margin-right:0.2em;">Products</span>
+         </a>|
+         <a href="/admin/categories" class="text-white" style="text-decoration:none;">
+         <span style="margin-left:0.2em; margin-right:0.2em;">Categories</span>
+         </a>|
+         <a href="/admin/banners" class="text-white" style="text-decoration:none;">
+         <span style="margin-left:0.2em; margin-right:0.2em;">Banners</span>
+         </a>|
+         <a href="/admin/orders" class="text-white" style="text-decoration:none;">
+         <span style="margin-left:0.2em; margin-right:0.2em;"">Orders</span>
+         </a>|
+         <a href="/admin/users" class="text-white" style="text-decoration:none;">
+         <span style="margin-left:0.2em; margin-right:0.2em;">Users</span>
+         </a>
+         {{#if admin.super}}
+         |<a href="/admin/admins" class="text-white" style="text-decoration:none;">
+         <span style="margin-left:0.2em; margin-right:0.2em;">Admins</span>
+         </a>
+         {{/if}}
+         <br>
+         {{/if}}
+         <span class="text-white mt-1"><span style="opacity:0.5;">&copy; 2021 Copyright:&nbsp;</span>All rights reserved</span>
+   </small>
+</footer>

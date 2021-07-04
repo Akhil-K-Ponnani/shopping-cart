@@ -26,23 +26,32 @@ module.exports = {
         bcrypt.compare(adminData.password, admin.password).then((status) => {
           if(status)
           {
-             response.admin = admin
-             response.status = true
-             resolve(response)
+            if(admin.active)
+            {
+              response.admin = admin
+              response.status = true
+              resolve(response)
+            }
+            else
+            {
+              response.logginErr = "This account was Blocked. Please contact Super Admin"
+              response.status = false
+              resolve(response)
+            }
           }
           else
           {
-             response.logginErr = "Invalid Email or Password"
-             response.status = false
-             resolve(response)
+            response.logginErr = "Invalid Email or Password"
+            response.status = false
+            resolve(response)
           }
         })
       }
       else
       {
-         response.logginErr = "Invalid Email or Password"
-         response.status = false
-         resolve(response)
+        response.logginErr = "Invalid Email or Password"
+        response.status = false
+        resolve(response)
       }
     })
   },
@@ -161,12 +170,6 @@ module.exports = {
         })
      })
   },
-  viewUsers:function() {
-    return new Promise(async(resolve, reject) => {
-      let users = await db.get().collection(collections.USER_COLLECTION).find().toArray();
-      resolve(users);
-    })
-  },
   addCategory:function(category) {
      return new Promise((resolve, reject) => {
         category.date = new Date()
@@ -214,6 +217,50 @@ module.exports = {
         resolve(products)
      })
   },
+  addBanner:function(banner) {
+     return new Promise((resolve, reject) => {
+        if(banner.source == "")
+           delete banner.source
+        banner.date = new Date()
+        db.get().collection(collections.BANNER_COLLECTION).insertOne(banner).then((data) => {
+           resolve(data.ops[0]._id)
+        })
+     })
+  },
+  viewAllBanners:function() {
+     return new Promise(async(resolve, reject) => {
+        let banners = await db.get().collection(collections.BANNER_COLLECTION).find().toArray()
+        resolve(banners)
+     })
+  },
+  getBannerDetails:function(bannerId) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.BANNER_COLLECTION).findOne({_id:objectId(bannerId)}).then((banner) => {
+           resolve(banner)
+        })
+     })
+  },
+  updateBanner:function(bannerId, bannerDetails) {
+    return new Promise((resolve, reject) => {
+      db.get().collection(collections.BANNER_COLLECTION).updateOne({_id:objectId(bannerId)}, 
+      {$set:
+      {
+        name:bannerDetails.name,
+        source:bannerDetails.source
+      }}).then((response) => {
+        if(bannerDetails.source == "")
+          db.get().collection(collections.BANNER_COLLECTION).updateOne({_id:objectId(bannerId)}, {$unset:{source:1}})
+        resolve(response)
+      })
+    })
+  },
+  deleteBanner:function(bannerId) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.BANNER_COLLECTION).removeOne({_id:objectId(bannerId)}).then((response) => {
+           resolve(response)
+        })
+     })
+  },
   searchProduct:function(search) {
      return new Promise(async(resolve, reject) => {
         let searchResult = await db.get().collection(collections.PRODUCT_COLLECTION).aggregate([
@@ -258,17 +305,17 @@ module.exports = {
         resolve(searchResult)
      })
   },
+  searchBanner:function(search) {
+     return new Promise(async(resolve, reject) => {
+        let searchResult = await db.get().collection(collections.BANNER_COLLECTION).find({$or:[{name:{'$regex' : search, '$options' : 'i'}}, {source:{'$regex' : search, '$options' : 'i'}}]}).toArray()
+        resolve(searchResult)
+     })
+  },
   searchOrder:function(search) {
      return new Promise(async(resolve, reject) => {
         let searchResult = await db.get().collection(collections.ORDER_COLLECTION).find({$or:[
            {'deliveryDetails.name':{'$regex' : search, '$options' : 'i'}}, {'deliveryDetails.mobile':{'$regex' : search, '$options' : 'i'}}, {'deliveryDetails.address':{'$regex' : search, '$options' : 'i'}}, {'deliveryDetails.pincode':{'$regex' : search, '$options' : 'i'}}, {paymentMethod:{'$regex' : search, '$options' : 'i'}}, {status:{'$regex' : search, '$options' : 'i'}}
         ]}).toArray()
-        resolve(searchResult)
-     })
-  },
-  searchUser:function(search) {
-     return new Promise(async(resolve, reject) => {
-        let searchResult = await db.get().collection(collections.USER_COLLECTION).find({$or:[{name:{'$regex' : search, '$options' : 'i'}}, {email:{'$regex' : search, '$options' : 'i'}}, {status:{'$regex' : search, '$options' : 'i'}}]}).toArray()
         resolve(searchResult)
      })
   }

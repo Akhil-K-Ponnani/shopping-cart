@@ -1,5 +1,5 @@
 <section>
-   <div class="container mt-4">
+   <div class="container">
       <div class="row">
          <div class="col-md-12">
             <h2 class="text-center">View Order</h2>
@@ -61,7 +61,26 @@
             {{/unless}}
             {{#unless order.Cancelled}}
             {{#unless order.Delivered}}
-            <button class="btn btn-danger ml-2" style="width:5em;" onclick="updateOrderStatus('{{order._id}}', 'Cancelled')">Cancel</button>
+            <button class="btn btn-danger ml-2" style="width:5em;" data-toggle="modal" data-target="#cancel{{order._id}}">Cancel</button>
+            <div class="modal fade" id="cancel{{order._id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+               <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Cancel?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                     </div>
+                     <div class="modal-body">
+                        Do you want to cancel this Order?
+                     </div>
+                     <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <button class="btn btn-danger" onclick="updateOrderStatus('{{order._id}}', 'Cancelled')">Yes</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
             {{/unless}}
             {{/unless}}
          </div>

@@ -22,6 +22,8 @@ router.get('/', async function(req, res, next) {
   {
     cartCount = await userHelpers.getCartCount(req.session.user._id)
   }
+  let banners = await productHelpers.viewAllBanners()
+  banners[0].active = 'active'
   productHelpers.viewAllProducts().then((categories) => {
      for(i=0;i<categories.length;i++)
      {
@@ -30,7 +32,7 @@ router.get('/', async function(req, res, next) {
            delete categories[i]
         }
      }
-    res.render('user/products', {title:'Home', categories, user, cartCount});
+    res.render('user/products', {title:'Home', categories, banners, user, cartCount});
   })
 });
 
@@ -358,7 +360,7 @@ router.get('/account', verifyLogin, async function(req, res, next) {
       orderCountPercent.toDeliver = (orderCount.toDeliver/orderCount.total)*100
       orderCountPercent.cancelled = (orderCount.cancelled/orderCount.total)*100
    }
-   res.render('user/account', {title:'My Account', user:req.session.user, cartCount, orderCount, orderCountPercent})
+   res.render('user/account', {title:'My Account', user, cartCount, orderCount, orderCountPercent})
 })
 
 router.get('/edit-account', verifyLogin, async function(req, res, next) {
@@ -375,6 +377,15 @@ router.post('/edit-account', verifyLogin, function(req, res, next) {
       req.session.user = await userHelpers.getUserDetails(req.session.user._id)
       res.redirect('/account')
    })
+})
+
+router.get('/about', async function(req, res, next) {
+   let cartCount = null
+   if(req.session.user)
+   {
+      cartCount = await userHelpers.getCartCount(req.session.user._id)
+   }
+   res.render('user/about', {title:'About Us', user:req.session.user, cartCount})
 })
 
 module.exports = router;

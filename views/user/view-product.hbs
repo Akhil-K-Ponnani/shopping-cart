@@ -1,7 +1,7 @@
 <section>
-   <div class="container-fluid mt-3">
+   <div class="container-fluid">
       <div class="row">
-         <div class="col-md-4">
+         <div class="col-md-5">
             <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:21em;">
             <h5 class="mt-2">{{product.name}}</h5>
             <label>{{product.variant}}</label>
@@ -13,7 +13,7 @@
             <button class="btn btn-outline-primary" style="width:7em;" disabled>Out of Stock</button>
             {{/if}}
          </div>
-         <div class="col-md-8 pt-3">
+         <div class="col-md-7 pt-3">
             <h6>Description</h6>
             <p>{{product.description}}</p>
          </div>

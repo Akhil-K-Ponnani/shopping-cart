@@ -330,6 +330,12 @@ module.exports = {
         })
      })
   },
+  viewAllUsers:function() {
+    return new Promise(async(resolve, reject) => {
+      let users = await db.get().collection(collections.USER_COLLECTION).find().toArray();
+      resolve(users);
+    })
+  },
   getUserDetails:function(userId) {
      return new Promise(async(resolve, reject) => {
         let user = await db.get().collection(collections.USER_COLLECTION).findOne({_id:objectId(userId)})
@@ -374,6 +380,91 @@ module.exports = {
            db.get().collection(collections.ORDER_COLLECTION).removeMany({user:objectId(userId)})
            resolve(response)
         })
+     })
+  },
+  viewAllAdmins:function() {
+    return new Promise(async(resolve, reject) => {
+      let admins = await db.get().collection(collections.ADMIN_COLLECTION).find().toArray();
+      resolve(admins);
+    })
+  },
+  addAdmin:function(adminData) {
+     return new Promise(async(resolve, reject) =>  {
+        adminData.date = new Date()
+        adminData.active = true
+        let admin = await db.get().collection(collections.ADMIN_COLLECTION).findOne({email:adminData.email});
+        if(admin)
+        {
+          resolve({status:false})
+        }
+        else
+        {
+          adminData.password = await bcrypt.hash(adminData.password, 10);
+          db.get().collection(collections.ADMIN_COLLECTION).insertOne(adminData).then((response) => {
+            resolve({status:true});
+          });
+        }
+     })
+  },
+  getAdminDetails:function(adminId) {
+     return new Promise(async(resolve, reject) => {
+        let admin = await db.get().collection(collections.ADMIN_COLLECTION).findOne({_id:objectId(adminId)})
+        resolve(admin)
+     })
+  },
+  changeAdminStatus:function(adminId, status) {
+     return new Promise((resolve, reject) => {
+        status = JSON.parse(status)
+        console.log(adminId, status)
+        db.get().collection(collections.ADMIN_COLLECTION).updateOne({_id:objectId(adminId)},
+        {
+           $set:{active:status}
+        }).then((response) => {
+           resolve(response)
+        })
+     })
+  },
+  changeAdminPosition:function(adminId, position) {
+     return new Promise((resolve, reject) => {
+        position = JSON.parse(position)
+        console.log(adminId, position)
+        if(position)
+        {
+           db.get().collection(collections.ADMIN_COLLECTION).updateOne({_id:objectId(adminId)},
+           {
+              $set:{super:position}
+           }).then((response) => {
+              resolve(response)
+           })
+        }
+        else
+        {
+           db.get().collection(collections.ADMIN_COLLECTION).updateOne({_id:objectId(adminId)},
+           {
+              $unset:{super:1}
+           }).then((response) => {
+              resolve(response)
+           })
+        }
+     })
+  },
+  deleteAdmin:function(adminId) {
+     return new Promise((resolve, reject) => {
+        db.get().collection(collections.ADMIN_COLLECTION).removeOne({_id:objectId(adminId)}).then((response) => {
+           resolve(response)
+        })
+     })
+  },
+  searchUser:function(search) {
+     return new Promise(async(resolve, reject) => {
+        let searchResult = await db.get().collection(collections.USER_COLLECTION).find({$or:[{name:{'$regex' : search, '$options' : 'i'}}, {email:{'$regex' : search, '$options' : 'i'}}, {status:{'$regex' : search, '$options' : 'i'}}]}).toArray()
+        resolve(searchResult)
+     })
+  },
+  searchAdmin:function(search) {
+     return new Promise(async(resolve, reject) => {
+        let searchResult = await db.get().collection(collections.ADMIN_COLLECTION).find({$or:[{name:{'$regex' : search, '$options' : 'i'}}, {email:{'$regex' : search, '$options' : 'i'}}, {status:{'$regex' : search, '$options' : 'i'}}, {super:{'$regex' : search, '$options' : 'i'}}]}).toArray()
+        resolve(searchResult)
      })
   }
 }

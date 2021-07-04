@@ -1,0 +1,37 @@
+<section>
+   <div class="container mt-3">
+      <div class="row">
+         <div class="col-md-12">
+            <h2 class="text-center">Add Admin</h2>
+            <form action="/admin/add-admin" method="POST" id="add-admin" onchange="addAdminErr()">
+              <div class="form-group">
+               <label for="name">Name</label>
+               <input type="text" name="name" class="form-control">
+              </div>
+              <div class="form-group">
+               <label for="email">Email</label>
+               <input type="email" name="email" class="form-control">
+              </div>
+              <div class="form-group">
+               <label for="password">Password</label>
+               <input type="password" name="password" class="form-control">
+               {{#if addAdminErr}}
+                  <small class="text-danger" id="addAdminErr">{{addAdminErr}}</small>
+               {{/if}}
+              </div>
+               <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+         </div>
+      </div>
+   </div>
+</section>
+
+
+
+
+<script>
+function addAdminErr()
+{
+   document.getElementById('addAdminErr').style.visibility = 'hidden'
+}
+</script>

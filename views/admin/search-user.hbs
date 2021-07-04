@@ -1,5 +1,5 @@
 <section>
-   <div class="container-fluid mt-5">
+   <div class="container-fluid">
       <div class="row">
          <div class="col-md-12">
             {{#if userCount}}
@@ -8,20 +8,49 @@
                <table class="table text-center">
                   <thead>
                      <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Status</th>
+                        <th scope="col" class="align-middle">No</th>
+                        <th scope="col" class="align-middle">Name</th>
+                        <th scope="col" class="align-middle">Email</th>
+                        <th scope="col" class="align-middle">Mobile</th>
+                        <th scope="col" class="align-middle">Address</th>
+                        <th scope="col" class="align-middle">Status</th>
                      </tr>
                   </thead>
                   <tbody>
                      {{#each users}}
                      <tr>
-                        <th scope="row" id="slno">{{this.slno}}</th>
-                        <td>{{this.name}}</td>
-                        <td>{{this.email}}</td>
-                        <td>{{this.status}}</td>
-                        <td><a href="/admin/view-user/{{this._id}}" class="btn btn-primary"><i class="fas fa-info-circle"></i></a></td>
+                        <th scope="row" class="align-middle" id="slno">{{this.slno}}</th>
+                        <td class="align-middle">{{this.name}}</td>
+                        <td class="align-middle">{{this.email}}</td>
+                        <td class="align-middle">{{this.mobile}}</td>
+                        <td class="align-middle">{{this.address}}</td>
+                        {{#if this.active}}
+                        <td class="align-middle"><span class="text-success">Active</span></td>
+                        {{else}}
+                        <td class="align-middle"><span class="text-danger">Blocked</span></td>
+                        {{/if}}
+                        <td class="align-middle"><a href="/admin/view-user/{{this._id}}" class="btn btn-primary"><i class="fas fa-info-circle"></i></a></td>
+                        <td class="align-middle"><a href="" class="btn btn-danger" data-toggle="modal" data-target="#delete{{this._id}}"><i class="fas fa-trash-alt"></i></a></td>
+                        <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                           <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                 <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Delete?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                 </div>
+                                 <div class="modal-body">
+                                    Do you want to delete {{this.name}} ?<br>
+                                    it also removes orders and cart of {{this.name}}
+                                 </div>
+                                 <div class="modal-footer">
+                                    <a href="" class="btn btn-secondary" data-dismiss="modal">Close</a>
+                                    <a href="/admin/delete-user/{{this._id}}" class="btn btn-danger">Delete</a>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
                      </tr>
                      {{/each}}
                   </tbody>

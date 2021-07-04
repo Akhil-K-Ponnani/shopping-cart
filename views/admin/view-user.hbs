@@ -1,5 +1,5 @@
 <section>
-   <div class="container mt-4">
+   <div class="container">
       <div class="row">
          <div class="col-md-12">
             <h2 class="text-center">View User</h2>
@@ -12,6 +12,18 @@
                <label for="email">Email</label>
                <input type="email" name="email" value="{{user.email}}" class="form-control" style="background:white;" disabled>
               </div>
+              {{#if user.mobile}}
+              <div class="form-group">
+              <label for="mobile">Mobile</label>
+              <input type="tel" name="mobile" value="{{user.mobile}}" class="form-control" style="background:white;" disabled>
+              </div>
+              {{/if}}
+              {{#if user.address}}
+              <div class="form-group">
+              <label for="address">Address</label>
+              <textarea rows="3" type="text" name="address" class="form-control" style="background:white;" disabled>{{user.address}}</textarea>
+              </div>
+              {{/if}}
               <div class="form-group">
                <label for="status">Status</label>
                {{#if user.active}}

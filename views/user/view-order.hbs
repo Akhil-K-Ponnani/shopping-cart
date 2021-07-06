@@ -39,7 +39,7 @@
          <div style="height:2.7em; width:7em;">
             <h6 class="card-title product-title">{{this.product.name}}</h6>
          </div>
-         <h6 class="card-text text-success">₹{{this.product.price}}</h6>
+         <h6 class="card-text text-success">{{this.product.price}}</h6>
           <span>Qty: {{this.quantity}}</span><br>
           <a href="/view-product/{{this.product._id}}" class="btn btn-primary btn-sm mt-2">View Product</a>
       </div>
@@ -52,7 +52,7 @@
             <h5 class="pl-3">Total Amount:</h5>
          </div>
          <div class="col-5 col-md-2 text-center align-items-center">
-            <h5>₹<span id="total">{{order.totalAmount}}</span><h5>
+            <h5><span id="total">{{order.totalAmount}}</span><h5>
          </div>
       </div>
    </div>

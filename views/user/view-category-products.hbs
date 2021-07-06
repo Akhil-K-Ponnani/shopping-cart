@@ -11,7 +11,7 @@
                   <div style="height:2.7em; width:7em;">
                      <h6 class="card-title product-title">{{this.name}}</h6>
                   </div>
-                  <h6 class="card-text text-success limit-line-length" style="max-width:7em;">₹{{this.price}}</h6>
+                  <h6 class="card-text text-success limit-line-length" style="max-width:7em;">{{this.price}}</h6>
               </a>
                   {{#if this.stock}}
                   <button class="btn btn-primary mt-2" onclick="addToCart('{{this._id}}')" style="width:7em;height:auto">Add to Cart</button>

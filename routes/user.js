@@ -14,6 +14,13 @@ verifyLogin = function(req, res, next) {
   }
 };
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'INR',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+});
+
 /* GET user home page. */
 router.get('/', async function(req, res, next) {
   let user = req.session.user;
@@ -23,10 +30,14 @@ router.get('/', async function(req, res, next) {
     cartCount = await userHelpers.getCartCount(req.session.user._id)
   }
   let banners = await productHelpers.viewAllBanners()
-  banners[0].active = 'active'
+  if(banners[0])
+     banners[0].active = 'active'
   productHelpers.viewAllProducts().then((categories) => {
      for(i=0;i<categories.length;i++)
      {
+        categories[i].products.forEach(product => {
+           product.price = currencyFormatter.format(product.price)
+        })
         if(categories[i].products.length === 0)
         {
            delete categories[i]
@@ -109,6 +120,11 @@ router.get('/cart', verifyLogin, async function(req, res, next) {
    if(products.length>0)
    {
       totalAmount = await userHelpers.getTotalAmount(req.session.user._id)
+      totalAmount = currencyFormatter.format(totalAmount)
+      products.forEach(product => 
+      {
+         product.product.price = currencyFormatter.format(product.product.price)
+      })
    }
    res.render('user/cart', {title:'Cart', products, user:req.session.user, totalAmount, cartCount});
 });
@@ -131,6 +147,7 @@ router.post('/change-product-quantity', function(req, res, next) {
    {
       userHelpers.changeProductQuantity(req.body).then(async(response) => {
          response.totalAmount = await userHelpers.getTotalAmount(req.body.user)
+         response.totalAmount = currencyFormatter.format(response.totalAmount)
          response.cartCount = await userHelpers.getCartCount(req.body.user)
          res.json(response)
       })
@@ -168,12 +185,14 @@ router.get('/place-order', verifyLogin, async function(req, res, next) {
       {
          req.session.userProduct = product
          total = req.session.userProduct.price
+         total = currencyFormatter.format(total)
       }
    }
    else
    {
       req.session.userProduct = null
       total = await userHelpers.getTotalAmount(req.session.user._id)
+      total = currencyFormatter.format(total)
    }
    if(total === 0)
       res.redirect('/cart')
@@ -239,6 +258,7 @@ router.get('/orders', verifyLogin, async function(req, res, next) {
       orderCount = orders.length
    orders.forEach(order => {
       order.product = order.products[0].item
+      order.totalAmount = currencyFormatter.format(order.totalAmount)
       order.status.reverse()
       order.currentStatus = order.status[0].name
    })
@@ -253,6 +273,10 @@ router.get('/view-order/:id', verifyLogin, async function(req, res, next) {
    }
    let order = await productHelpers.getOrderDetails(req.params.id)
    let products = await productHelpers.getOrderProducts(req.params.id)
+   order.totalAmount = currencyFormatter.format(order.totalAmount)
+   products.forEach(product => {
+      product.product.price = currencyFormatter.format(product.product.price)
+   })
    order.status.reverse()
    order.currentStatus = order.status[0].name
    order.currentStatusDate = order.status[0].date.toDateString()+','+order.status[0].date.toLocaleTimeString()
@@ -279,6 +303,7 @@ router.get('/view-product/:id', async function(req, res, next) {
       cartCount = await userHelpers.getCartCount(req.session.user._id)
    }
    productHelpers.getProductDetails(req.params.id).then((product) => {
+      product.price = currencyFormatter.format(product.price)
       res.render('user/view-product', {title:product.name, product, user:req.session.user, cartCount})
    })
 })
@@ -291,6 +316,9 @@ router.get('/view-category-products/:id', async function(req, res, next) {
    }
    productHelpers.viewCategoryProducts(req.params.id).then(async(products) => {
       let category = await productHelpers.getCategoryDetails(req.params.id)
+      products.forEach(product => {
+         product.price = currencyFormatter.format(product.price)
+      })
       res.render('user/view-category-products', {title:category.name, products, category, user:req.session.user, cartCount})
    })
 })
@@ -299,7 +327,12 @@ router.get('/search-product', function(req, res, next) {
    productHelpers.searchProduct(req.query.search).then(async(products) => {
       let productCount = null
       if(products.length > 0)
+      {
+         products.forEach(product => {
+            product.price = currencyFormatter.format(product.price)
+         })
          productCount = products.length
+      }
       let cartCount = null
       if(req.session.user)
       {

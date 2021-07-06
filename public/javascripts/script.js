@@ -263,6 +263,41 @@ $(document).ready(function()
       displayName:"<small class='text-danger'>Please enter a category display Name.</small>"
     }
   })
+ 
+  $("#add-banner").validate(
+  {
+    rules:
+    {
+      name:
+      {
+        required:true
+      },
+      image:
+      {
+        required:true
+      }
+    },
+    messages:
+    {
+      name:"<small class='text-danger'>Please enter a banner Name.</small>",
+      image:"<small class='text-danger'>Please choose a banner Image.</small>"
+    }
+  })
+ 
+  $("#edit-banner").validate(
+  {
+    rules:
+    {
+      name:
+      {
+        required:true
+      }
+    },
+    messages:
+    {
+      name:"<small class='text-danger'>Please enter a banner Name.</small>"
+    }
+  })
   
   $("#add-admin").validate(
   {

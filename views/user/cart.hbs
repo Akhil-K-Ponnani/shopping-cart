@@ -12,7 +12,7 @@
             <div class="row">
                <div class="col-md-6 my-auto">
                   <h6 class="product-title">{{this.product.name}}</h6>
-                  <h6 class="text-success">₹{{this.product.price}}</h6>
+                  <h6 class="text-success">{{this.product.price}}</h6>
                </div>
                <div class="col-md-6 my-auto">
                   <button class="btn btn-danger btn-sm" onclick="removeCartProduct('{{this._id}}', '{{this.product._id}}')">Remove</button>
@@ -33,7 +33,7 @@
          </div>
          <div class="col-6 col-md-3 text-center align-items-center">
             <h5>
-            ₹<span id="total">{{totalAmount}}</span>
+            <span id="total">{{totalAmount}}</span>
             <h5>
             <a href="/place-order" class="btn btn-success font-weight-bold" style="width:100%;">Place Order</a>
          </div>
@@ -77,7 +77,6 @@
             {
                if(response.removeProduct)
                {
-                  alert("Product Removed from Cart")
                   location.reload()
                }
                else
@@ -108,7 +107,6 @@
          success:(response) => {
             if(response.status)
             {
-               alert("Product Removed from Cart")
                location.reload()
             }
             else

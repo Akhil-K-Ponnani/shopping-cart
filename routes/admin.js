@@ -26,12 +26,20 @@ verifySuper = function(req, res, next) {
    }
 };
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'INR',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+});
+
 /* GET admin home listing. */
 router.get('/',verifyLogin, function(req, res, next) {
   productHelpers.viewAllProducts().then((categories) => {
     let slno = 1
     categories.forEach(category => {
        category.products.forEach(product => {
+          product.price = currencyFormatter.format(product.price)
           product.slno = slno
           slno++
        })
@@ -133,6 +141,7 @@ router.get('/orders',verifyLogin, function(req, res, next) {
   productHelpers.viewOrders().then((orders) => {
     let slno = 1
     orders.forEach(order => {
+       order.totalAmount = currencyFormatter.format(order.totalAmount)
        order.slno = slno
        order.currentStatus = order.status[order.status.length-1].name
        if(order.currentStatus == 'Delivered')
@@ -150,6 +159,7 @@ router.get('/orders',verifyLogin, function(req, res, next) {
 router.get('/view-order/:id', verifyLogin, async function(req, res, next) {
    let order = await productHelpers.getOrderDetails(req.params.id)
    let products = await productHelpers.getOrderProducts(req.params.id)
+   order.totalAmount = currencyFormatter.format(order.totalAmount)
    order.status.reverse()
    order.currentStatus = order.status[0].name
    order[order.status[0].name.replace(/ /g,'')] = true
@@ -414,6 +424,7 @@ router.get('/search-product', verifyLogin, function(req, res, next) {
          productCount = products.length
       let slno = 1
       products.forEach(product => {
+         product.price = currencyFormatter.format(product.price)
          product.slno = slno
          slno++
       })
@@ -459,6 +470,7 @@ router.get('/search-order', verifyLogin, function(req, res, next) {
          orderCount = orders.length
       let slno = 1
       orders.forEach(order => {
+         order.totalAmount = currencyFormatter.format(order.totalAmount)
          order.slno = slno
          order.currentStatus = order.status[order.status.length-1].name
          if(order.currentStatus == 'Delivered')

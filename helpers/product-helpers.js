@@ -1,4 +1,4 @@
-var bcrypt = require('bcryptjs');
+var bcrypt = require('bcrypt');
 var objectId = require('mongodb').ObjectID;
 var db = require('../config/connection');
 var collections = require('../config/collections');

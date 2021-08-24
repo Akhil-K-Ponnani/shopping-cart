@@ -43,6 +43,34 @@ footer{
 
 
 
+/* Input box additional */
+.custom-select:focus,.custom-file:focus-within .custom-file-label {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+}
+
+/* Input box while error */
+.form-control.error,.custom-select.error,.custom-file-input.error~.custom-file-label {
+  border: 1px solid #dc3545;
+}
+
+.form-control.error:focus,.custom-select.error:focus,.custom-file-input.error:focus-within~.custom-file-label {
+  box-shadow: 0 0 0 0.2rem rgb(220 53 69 / 25%);
+}
+
+
+
+
+
+/* Change font weight while hover on far icons */
+.fal:hover {
+  font-weight: 900;
+}
+
+
+
+
+
 /* Limit line length of a sentence in horizontal and vertical */
 
 .limit-line-length {

@@ -4,9 +4,9 @@
       <div class="row border rounded m-0 mb-3 pt-1 pb-1">
          <div class="col-4 text-center my-auto">
             <a href="/view-product/{{this.product._id}}" style="text-decoration:none;"><img src="/product-images/{{this.product._id}}.jpg" class="mb-2 mt-1" alt="{{this.product.name}}" style="width:70px;height:70px;"></a><br>
-            <i class="fas fa-minus-square mr-1" style="font-size:20px;" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', -1)"></i>
+            <i class="fal fa-minus-square mr-1" style="font-size:20px;" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', -1)"></i>
             <span id="{{this.product._id}}">{{this.quantity}}</span>
-            <i class="fas fa-plus-square ml-1" style="font-size:20px;" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', 1)"></i>
+            <i class="fal fa-plus-square ml-1" style="font-size:20px;" onclick="changeQuantity('{{this._id}}', '{{this.product._id}}', '{{../user._id}}', 1)"></i>
          </div>
          <div class="col-8 text-center my-auto">
             <div class="row">

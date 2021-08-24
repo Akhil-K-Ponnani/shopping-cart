@@ -1,9 +1,9 @@
 <section>
-   <div class="container-fluid">
+   <div class="container">
       <div class="row">
-         <div class="col-md-5">
-            <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" style="width:21em;">
-            <h5 class="mt-2">{{product.name}}</h5>
+         <div class="col-12">
+            <img src="/product-images/{{product._id}}.jpg" alt="{{product.name}}" class="mx-auto d-block" style="width:21em;">
+            <h5 class="mt-2">{{product.name}}<i class="fal fa-share-alt float-right" data-toggle="modal" data-target="#shareProduct"></i></h5>
             <label>{{product.variant}}</label>
             <h5 class="text-success">{{product.price}}</h5>
             {{#if product.stock}}
@@ -12,11 +12,215 @@
             {{else}}
             <button class="btn btn-outline-primary" style="width:7em;" disabled>Out of Stock</button>
             {{/if}}
-         </div>
-         <div class="col-md-7 pt-3">
-            <h6>Description</h6>
+            <h6 class="pt-3">Description</h6>
             <p>{{product.description}}</p>
          </div>
       </div>
    </div>
 </section>
+
+<section>
+   <div class="modal fade" id="shareProduct" tabindex="-1" role="dialog" aria-labelledby="shareProductLabel" aria-hidden="true">
+   <div class="modal-dialog" role="document">
+   <div class="modal-content">
+   <div class="share-modal-header">
+   <span>Share Product</span>
+   <div class="close-btn" data-dismiss="modal"><i class="fal fa-times"></i></div>
+   </div>
+   <div class="share-modal-body">
+   <p>Share Product via</p>
+   <div class="icons">
+   <button onclick="shareProduct('facebook', '{{product._id}}', '{{product.name}}', '{{product.price}}')"><i class="fab fa-facebook-f"></i></button>
+   <button onclick="shareProduct('twitter', '{{product._id}}', '{{product.name}}', '{{product.price}}')"><i class="fab fa-twitter"></i></button>
+   <button onclick="shareProduct('linkedin', '{{product._id}}', '{{product.name}}', '{{product.price}}')"><i class="fab fa-linkedin-in"></i></button>
+   <button onclick="shareProduct('whatsapp', '{{product._id}}', '{{product.name}}', '{{product.price}}')"><i class="fab fa-whatsapp"></i></button>
+   <button onclick="shareProduct('telegram', '{{product._id}}', '{{product.name}}', '{{product.price}}')"><i class="fab fa-telegram-plane"></i></button>
+   </div>
+   <p>Or copy link</p>
+   <div class="field">
+   <i class="fal fa-link" ></i>
+   <input type="text" value="https://shoppingcart.ml/view-product/{{product._id}}" id="product-link" readonly>
+   <button id="copy-btn">Copy</button>
+   </div>
+   </div>
+   </div>
+   </div>
+   </div>
+</section>
+
+
+
+
+<style>
+   .modal-content{
+      padding: 20px;
+   }
+   .share-modal-header, .icons, .field{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+   }
+   .share-modal-header{
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ebedf9;
+   }
+   .share-modal-header span{
+      font-size: 21px;
+      font-weight: 600;
+   }
+   .close-btn, .icons button{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+   }
+   .close-btn{
+      height: 33px;
+      width: 33px;
+      color: #878787;
+      background: #f2f3fb;
+      cursor: pointer;
+   }
+   .share-modal-body{
+      margin: 10px 0;
+   }
+   .share-modal-body p{
+      font-size: 16px;
+   }
+   .icons{
+      margin: 10px 0 15px 0;
+   }
+   .icons button{
+      background: transparent;
+      height: 50px;
+      width: 50px;
+      font-size: 20px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: all 0.3s ease-in-out;
+   }
+   .icons button:nth-child(1){
+      color: #1877f2;
+      border-color: #a3c9fa;
+   }
+   .icons button:nth-child(1):hover{
+      background: #1877f2;
+   }
+   .icons button:nth-child(2){
+      color: #46c1f6;
+      border-color: #b5e6fb;
+   }
+   .icons button:nth-child(2):hover{
+      background: #46c1f6;
+   }
+   .icons button:nth-child(3){
+   color: #0a66c2;
+   border-color: #8bc2f9;
+   }
+   .icons button:nth-child(3):hover{
+   background: #0a66c2;
+   }
+   .icons button:nth-child(4){
+      color: #25d336;
+      border-color: #a6efad;
+   }
+   .icons button:nth-child(4):hover{
+      background: #25d336;
+   }
+   .icons button:nth-child(5){
+      color: #0088cc;
+      border-color: #85d6ff;
+   }
+   .icons button:nth-child(5):hover{
+      background: #0088cc;
+   }
+   .icons button:hover{
+      color: #fff;
+      border-color: transparent;
+      outline: none;
+   }
+   .icons button i{
+      transition: transform all 0.3s ease-in-out;
+   }
+   .icons button:hover i{
+      transform: scale(1.2);
+   }
+   .field{
+      margin: 10px 0 -5px 0;
+      height: 45px;
+      border: 1px solid #e1e1e1;
+      border-radius: 4px;
+      padding: 5px 5px;
+   }
+   .field.copied{
+      border-color: #007bff;
+   }
+   .field i{
+      padding: 5px;
+      text-align: center;
+   }
+   .field.copied i{
+      color: #007bff;
+   }
+   .field input{
+      border: none;
+      outline: none;
+      height: 100%;
+      width: 100%;
+      font-size: 15px;
+   } 
+   .field button{
+      height: 35px;
+      width: 100px;
+      hpadding:5px 10px;
+      hfont-size: 16px;
+      color: #fff;
+      background: #007bff;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      margin-left: 7px;
+      transition: background 0.3s ease-in-out;
+   }
+   .field button:hover, .field button:focus{
+      background: #0062cc;
+      outline: none;
+   }
+</style>
+
+
+
+
+<script>
+   function shareProduct(method, productId, productName, productPrice)
+   {
+      productName = productName.replace(/ /g, "%20")
+      let productLink = "https://shoppingcart.ml/view-product/"+productId
+      if(method === 'facebook')
+         location.href = "https://facebook.com/sharer/sharer.php?u="+productLink+"&quote="+productName+"%20at%20"+productPrice+"%20Only%0ACheck%20it%20now&hashtag=%23ShoppingCart"
+      else if(method === 'twitter')
+         location.href = "https://twitter.com/intent/tweet?url="+productLink+"&text="+productName+"%20at%20"+productPrice+"%20Only%0ACheck%20it%20now%0A"
+      else if(method === 'linkedin')
+         location.href = "http://linkedin.com/shareArticle?mini=true&url="+productLink+"&title="+productName+"%20at%20"+productPrice+"%20Only%0ACheck%20it%20now&summary=Only%20limited%20products%20available&source="+productLink
+      else if(method === 'whatsapp')
+         location.href = "https://api.whatsapp.com/send?text="+productName+"%20at%20"+productPrice+"%20Only%0ACheck%20it%20now%0A"+productLink
+      else
+         location.href = "https://telegram.me/share/url?url="+productLink+"&text="+productName+"%20at%20"+productPrice+"%20Only%0ACheck%20it%20now"
+   }
+   
+   $(document).ready(function(){
+      $("#copy-btn").click(function(){
+         $("#product-link").select()
+         if(document.execCommand("copy"))
+         {
+            $(".field").addClass("copied")
+            $("#copy-btn").html("Copied")
+            setTimeout(() => {
+               $(".field").removeClass("copied")
+               $("#copy-btn").html("Copy")
+               window.getSelection().removeAllRanges()
+            }, 3000)
+         }
+      })
+   })
+</script>

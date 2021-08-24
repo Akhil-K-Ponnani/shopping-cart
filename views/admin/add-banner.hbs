@@ -14,7 +14,7 @@
               </div>
               <div class="form-group">
                 <label for="image">Image</label>
-                <img src="" alt="" style="width:222px;height:100px;" id="imgView" class="pb-1">
+                <img src="" alt="" style="width:222px;height:100px;" id="imgView" class="pb-1" hidden>
                 <div class="custom-file">
                 <input type="file" name="image" class="custom-file-input" id="customFile" onchange="viewImage(event)">
                 <label class="custom-file-label" for="customFile">Choose file</label>
@@ -33,6 +33,7 @@
 <script>
    function viewImage(event)
    {
+      document.getElementById('imgView').removeAttribute("hidden")
       document.getElementById('imgView').src = URL.createObjectURL(event.target.files[0])
    }
 </script>

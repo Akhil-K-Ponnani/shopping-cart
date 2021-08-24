@@ -54,8 +54,6 @@ $(document).ready(function() {
 
 
 
-
-
 //Jquery Validations
 
 $(document).ready(function()
@@ -104,8 +102,17 @@ $(document).ready(function()
     messages:
     {
       name:"<small class='text-danger'>Please enter your Name.</small>",
-      email:"<small class='text-danger'>Please enter a valid Email.</small>",
-      password:"<small class='text-danger'>Password must be 8-15 characters.</small>"
+      email:
+      {
+        required:"<small class='text-danger'>Please enter your Email.</small>",
+        email:"<small class='text-danger'>Please enter a valid Email.</small>"
+      },
+      password:
+      {
+        required:"<small class='text-danger'>Please enter your Password.</small>",
+        minlength:"<small class='text-danger'>Password must be 8-15 characters.</small>",
+        maxlength:"<small class='text-danger'>Password must be 8-15 characters.</small>"
+      }
     }
   })
  
@@ -180,6 +187,17 @@ $(document).ready(function()
       price:"<small class='text-danger'>Please enter a valid product Price.</small>",
       description:"<small class='text-danger'>Please enter a product Description.</small>",
       image:"<small class='text-danger'>Please choose a product Image.</small>"
+    },
+    errorPlacement: function (error, element)
+    {
+      if(element.attr("name") == "image")
+      {
+        error.appendTo("#imageErr");
+      }
+      else
+      {
+        error.insertAfter(element)
+      }
     }
   })
  

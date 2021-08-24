@@ -43,7 +43,7 @@ router.get('/', async function(req, res, next) {
            delete categories[i]
         }
      }
-    res.render('user/products', {title:'Home', categories, banners, user, cartCount});
+    res.render('user/products', {title:'Ecommerce of large quality products in affordable price', categories, banners, user, cartCount});
   })
 });
 

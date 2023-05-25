@@ -4,8 +4,8 @@ const state = {
 };
 
 module.exports.connect = function(done) {
-  const url='mongodb://localhost:27017';
-  const dbName='ShoppingCart';
+  const url=process.env.DB_URI||'mongodb://localhost:27017';
+  const dbName=process.env.DB_NAME||'ShoppingCart';
  
   mongoClient.connect(url, function(err, data) {
     if(err)

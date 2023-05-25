@@ -6,6 +6,7 @@ var logger = require('morgan');
 var hbs = require('express-handlebars');
 var fileUpload = require('express-fileupload');
 var session = require('express-session');
+require('dotenv').config()
 
 var db = require('./config/connection')
 
